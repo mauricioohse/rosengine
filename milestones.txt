@@ -1,0 +1,107 @@
+MR NUTS FLOW MILESTONES
+=====================
+
+PROTOTYPE PHASE
+--------------
+1. Basic Squirrel Setup
+x  - Create squirrel entity with basic sprite
+x  - Add gravity component
+x  - Implement vertical falling
+
+2. Basic State System
+x  - Implement state machine for squirrel (open/closed arms)
+x  - Add basic state switching with spacebar
+
+3. Basic Movement
+x  - Implement rotation controls for open arms state
+x  - Add speed limits for each state
+x  - Implement acceleration in closed arms state
+
+3.5 Camera following the squirrel
+x  - Create camera component with viewport properties
+x  - Add camera system to handle viewport transformations
+x  - Implement smooth follow behavior
+x  - Update render system to use camera offset
+
+4. Basic Cloud Setup
+x  - Create cloud entities (white and black)
+x  - Add basic collision detection
+x  - Implement simple cloud placement
+
+5. Basic Gameplay Loop
+x  - Add start position (helicopter drop)
+x  - Add simple end condition (reach bottom)
+x  - Implement basic timer
+
+6 - Peanuts powerups that increase squirrel max speeds
+x  - create a peanut object that increases the max speed of the squirrel when collected
+x  - create a peanut object that shields the squirrel when touching a cloud
+x  - create a super peanut object that makes the squirrel invincible to clouds and increase speed temporarly for 5 seconds
+x  - add peanuts to random object generation in the beginning and reset
+
+REFINEMENT PHASE
+---------------
+1. Enhanced States
+x  - Add wiggle state implementation
+   - Polish state transitions
+   - Add visual feedback for state changes
+
+2. Cloud System Enhancement
+x  - Implement different cloud sizes
+x  - Add proper bounce physics for black clouds
+   - Fine-tune cloud placement for better gameplay
+   - Add cloud visual variations
+
+3. Visual Polish
+x  - Add proper squirrel animations
+x  - Implement camera follow behavior
+x  - Add background elements
+   - Add visual effects for state changes
+
+4. Game Flow
+x  - Add proper game start/end screens
+x  - Implement score system based on time
+x  - Add restart functionality
+x  - Save best times
+
+5. Audio and Feedback
+   - Add sound effects for state changes
+   x Background music (toggleable with M key)
+   x  Helicopter ambient sound (when near)
+   x  Wind whooshing sound (speed-based intensity)
+   x  cloud hit
+      power up collection
+      power up ending sound
+      victory sound
+      new record sound
+
+   - Add collision sounds
+   - Implement background music
+   - Add visual feedback for speed
+
+6. Final Polish
+   - Add particle effects
+   - Fine-tune physics values
+   - Add screen shake effects
+   - Implement basic tutorial
+
+File system description
+
+roseengine/
+├── src/
+│   ├── core/           # Core engine systems
+│   │   ├── window.h    # Window management
+│   │   ├── window.cpp
+│   │   └── engine.h    # Main engine header
+│   ├── game/           # Game-specific code
+│   │   └── game.cpp    # Game implementation
+│   └── main.cpp        # Entry point
+├── include/            # External library headers (SDL2)
+├── lib/               # External library binaries
+├── dll/               # DLLs for Windows
+├── assets/            # Game assets
+├── bin/               # Build outputs
+│   ├── debug/
+│   └── release/
+├── web/               # Web build outputs
+└── Makefile
