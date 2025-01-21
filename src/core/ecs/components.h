@@ -236,7 +236,9 @@ void InitPeanut(EntityID entity, PeanutType type);
 
 struct ComponentArrays {
     // Component data pools
-    TransformComponent transforms[MAX_ENTITIES];
+#define xcomponent(enum, type, id) type##Component type##s[MAX_ENTITIES];
+#include "components/components.def"
+#undef xcomponent
     SpriteComponent sprites[MAX_ENTITIES];
     WASDControllerComponent wasdControllers[MAX_ENTITIES];
     ColliderComponent colliders[MAX_ENTITIES];

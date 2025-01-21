@@ -9,7 +9,7 @@ void* ComponentArrays::GetComponentData(EntityID entity, ComponentType type) {
     }
 
     switch (type) {
-        case COMPONENT_TRANSFORM: return &transforms[entity];
+        case COMPONENT_TRANSFORM: return &Transforms[entity];
         case COMPONENT_SPRITE:    return &sprites[entity];
         case COMPONENT_WASD_CONTROLLER: return &wasdControllers[entity];
         case COMPONENT_COLLIDER:  return &colliders[entity];

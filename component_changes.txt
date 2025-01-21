@@ -1,0 +1,9 @@
+currently, to add a new component, this is needed:
+
+1) Add Component Type in ecs_types.h
+2) Create Component Structure in components.h
+3) Add Component Array in ComponentArrays struct in components.h
+4) Add Component Initialization Function in components.h and components.cpp
+5) Add case for COMPONENT_TYPE on GetComponentData in components.cpp
+6) Create ADD_COMPONENT() Macro in ecs_types.h
+    - this causes any new component to recompile basically everything since ecs_types.h is very basic header

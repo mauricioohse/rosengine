@@ -25,7 +25,7 @@ void CloudSystem::Update(float deltaTime, EntityManager* entities, ComponentArra
     
     if (!squirrelEntity) return;
     
-    TransformComponent* squirrelTransform = &components->transforms[squirrelEntity];
+    TransformComponent* squirrelTransform = &components->Transforms[squirrelEntity];
     SquirrelComponent* squirrel = &components->squirrelComponents[squirrelEntity];
     
     // Check all clouds
@@ -33,7 +33,7 @@ void CloudSystem::Update(float deltaTime, EntityManager* entities, ComponentArra
         if (!entities->HasComponent(cloudEntity, COMPONENT_CLOUD)) continue;
         
         CloudComponent* cloud = &components->clouds[cloudEntity];
-        TransformComponent* cloudTransform = &components->transforms[cloudEntity];
+        TransformComponent* cloudTransform = &components->Transforms[cloudEntity];
         SpriteComponent* cloudSprite = &components->sprites[cloudEntity];
         
         // Calculate cloud boundaries // btw there are hacks here because sprite is centered at transform coordinates

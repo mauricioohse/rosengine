@@ -37,7 +37,7 @@ void BackgroundSystem::Update(float deltaTime, EntityManager* entities, Componen
     for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
         if (entities->HasComponent(entity, COMPONENT_BACKGROUND | COMPONENT_TRANSFORM | COMPONENT_SPRITE)) {
             BackgroundComponent* background = &components->backgrounds[entity];
-            TransformComponent* transform = &components->transforms[entity];
+            TransformComponent* transform = &components->Transforms[entity];
             SpriteComponent* sprite = &components->sprites[entity];
             
             // Update X position based on camera with parallax

@@ -9,10 +9,11 @@ typedef uint32_t ComponentType;
 #define MAX_ENTITIES 1000
 #define INVALID_ENTITY 0
 
+#define xcomponent(component_type, component, id) COMPONENT_##component_type = 1 << id,
 // Component type identifiers
 enum ComponentTypes {
     COMPONENT_NONE = 0,
-    COMPONENT_TRANSFORM = 1 << 0,
+#include "components/components.def"
     COMPONENT_SPRITE = 1 << 1,
     COMPONENT_WASD_CONTROLLER = 1 << 2,
     COMPONENT_COLLIDER = 1 << 3,
@@ -25,6 +26,7 @@ enum ComponentTypes {
     COMPONENT_PEANUT = 1 << 10,
     // Add more component types here
 }; 
+#undef xcomponent
 
 #define ADD_TRANSFORM(entity, x, y, rot, scale) \
     do { \
