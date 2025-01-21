@@ -9,7 +9,9 @@ void* ComponentArrays::GetComponentData(EntityID entity, ComponentType type) {
     }
 
     switch (type) {
-        case COMPONENT_TRANSFORM: return &Transforms[entity];
+#define xcomponent(enum, type, id) case COMPONENT_##enum: return &type##s[entity];
+#include "components/components.def"
+#undef xcomponent
         case COMPONENT_SPRITE:    return &sprites[entity];
         case COMPONENT_WASD_CONTROLLER: return &wasdControllers[entity];
         case COMPONENT_COLLIDER:  return &colliders[entity];
