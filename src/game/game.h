@@ -11,6 +11,7 @@
 #include "../core/ecs/systems/background_system.h"
 #include "../core/ecs/systems/peanut_system.h"
 #include "../core/ecs/systems/music_system.h"
+#include "../core/ecs/component_macros.h"
 
 enum GameState {
     GAME_STATE_PLAYING,

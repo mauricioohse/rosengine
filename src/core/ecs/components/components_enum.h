@@ -1,6 +1,6 @@
 #pragma once
 
-#define xcomponent(name, type, id) name,
+#define xcomponent(name, type, id, ...) name,
 enum component_type
 {
 #include "components.def"

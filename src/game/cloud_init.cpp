@@ -1,4 +1,5 @@
 #include "cloud_init.h"
+#include "../core/ecs/components.h"
 #include "../core/engine.h"
 #include "../core/resource_manager.h"
 #include <stdlib.h>

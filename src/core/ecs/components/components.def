@@ -7,4 +7,4 @@ component_manager.h     - add the functions to add and get component
 component_macros.h      - makes it easier to ADD_COMPONENT() 
 */
 
-xcomponent(TRANSFORM, Transform, 0)
+xcomponent(TRANSFORM, Transform, 0, (EntityID entity, float x, float y, float rotation, float scale), (x, y, rotation, scale))

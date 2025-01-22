@@ -51,3 +51,6 @@ struct Engine {
 };
 
 extern Engine g_Engine;  // Global engine instance
+
+// requires Engine externation
+#include "ecs/component_macros.h"

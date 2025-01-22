@@ -9,7 +9,7 @@ void* ComponentArrays::GetComponentData(EntityID entity, ComponentType type) {
     }
 
     switch (type) {
-#define xcomponent(enum, type, id) case COMPONENT_##enum: return &type##s[entity];
+#define xcomponent(enum, type, id, ...) case COMPONENT_##enum: return &type##s[entity];
 #include "components/components.def"
 #undef xcomponent
         case COMPONENT_SPRITE:    return &sprites[entity];
@@ -29,7 +29,6 @@ void* ComponentArrays::GetComponentData(EntityID entity, ComponentType type) {
     }
 }
 
-
 void ComponentArrays::RemoveComponent(EntityID entity, ComponentType type) {
     Component* component = (Component*)GetComponentData(entity, type);
     if (component) {
@@ -37,13 +36,6 @@ void ComponentArrays::RemoveComponent(EntityID entity, ComponentType type) {
     }
 }
 
-void InitTransform(EntityID entity, float x, float y, float rotation, float scale) {
-    TransformComponent* transform = 
-        (TransformComponent*)g_Engine.componentArrays.GetComponentData(entity, COMPONENT_TRANSFORM);
-    if (transform) {
-        transform->Init(x, y, rotation, scale);
-    }
-}
 
 void InitSprite(EntityID entity, Texture* texture) {
     SpriteComponent* sprite = 

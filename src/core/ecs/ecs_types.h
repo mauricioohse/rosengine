@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL.h>
 
+
 // Common type definitions
 typedef uint32_t EntityID;
 typedef uint32_t ComponentType;
@@ -9,7 +10,7 @@ typedef uint32_t ComponentType;
 #define MAX_ENTITIES 1000
 #define INVALID_ENTITY 0
 
-#define xcomponent(component_type, component, id) COMPONENT_##component_type = 1 << id,
+#define xcomponent(component_type, component, id, ...) COMPONENT_##component_type = 1 << id,
 // Component type identifiers
 enum ComponentTypes {
     COMPONENT_NONE = 0,
@@ -28,11 +29,11 @@ enum ComponentTypes {
 }; 
 #undef xcomponent
 
-#define ADD_TRANSFORM(entity, x, y, rot, scale) \
-    do { \
-        g_Engine.entityManager.AddComponentToEntity(entity, COMPONENT_TRANSFORM); \
-        InitTransform(entity, x, y, rot, scale); \
-    } while(0)
+// #define ADD_TRANSFORM(entity, x, y, rot, scale) \
+//     do { \
+//         g_Engine.entityManager.AddComponentToEntity(entity, COMPONENT_TRANSFORM); \
+//         InitTransform(entity, x, y, rot, scale); \
+//     } while(0)
 
 #define ADD_SPRITE(entity, texture) \
     do { \

@@ -220,7 +220,7 @@ struct CameraComponent : Component {
     }
 };
 
-// Component initialization functions
+// Component initialization functions declarations only
 void InitTransform(EntityID entity, float x, float y, float rotation = 0.0f, float scale = 1.0f);
 void InitSprite(EntityID entity, Texture* texture);
 void InitWASDController(EntityID entity, float moveSpeed = 200.0f, bool canMove = true);
@@ -236,7 +236,7 @@ void InitPeanut(EntityID entity, PeanutType type);
 
 struct ComponentArrays {
     // Component data pools
-#define xcomponent(enum, type, id) type##Component type##s[MAX_ENTITIES];
+#define xcomponent(enum, type, id, ...) type##Component type##s[MAX_ENTITIES];
 #include "components/components.def"
 #undef xcomponent
     SpriteComponent sprites[MAX_ENTITIES];
@@ -262,3 +262,12 @@ struct ComponentArrays {
         printf("ComponentArrays initialized\n");
     }
 }; 
+
+
+// extern EntityManager entityManager;
+
+// #define xcomponent(ENUM_NAME, TYPE_NAME, ID, PARAMS, CALLARGS)                   \
+// inline void ADD_##ENUM_NAME PARAMS                              \
+
+// #include "components/components.def"
+// #undef xcomponent
