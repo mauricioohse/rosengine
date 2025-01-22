@@ -8,3 +8,4 @@ component_macros.h      - makes it easier to ADD_COMPONENT()
 */
 
 xcomponent(TRANSFORM, Transform, 0, (EntityID entity, float x, float y, float rotation, float scale), (x, y, rotation, scale))
+xcomponent(SPRITE, Sprite, 1, (EntityID entity, Texture* texture), (texture))

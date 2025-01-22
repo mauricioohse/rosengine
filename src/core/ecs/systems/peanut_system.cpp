@@ -43,7 +43,7 @@ void PeanutSystem::Update(float deltaTime, EntityManager* entities, ComponentArr
             if (peanut->wasCollected) continue;  // Skip already collected peanuts
 
             TransformComponent* peanutTransform = &components->Transforms[entity];
-            SpriteComponent* peanutSprite = &components->sprites[entity];
+            SpriteComponent* peanutSprite = &components->Sprites[entity];
 
             // Simple AABB collision check
             bool collision = 

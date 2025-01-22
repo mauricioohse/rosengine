@@ -15,7 +15,6 @@ typedef uint32_t ComponentType;
 enum ComponentTypes {
     COMPONENT_NONE = 0,
 #include "components/components.def"
-    COMPONENT_SPRITE = 1 << 1,
     COMPONENT_WASD_CONTROLLER = 1 << 2,
     COMPONENT_COLLIDER = 1 << 3,
     COMPONENT_ANIMATION = 1 << 4,
@@ -28,18 +27,6 @@ enum ComponentTypes {
     // Add more component types here
 }; 
 #undef xcomponent
-
-// #define ADD_TRANSFORM(entity, x, y, rot, scale) \
-//     do { \
-//         g_Engine.entityManager.AddComponentToEntity(entity, COMPONENT_TRANSFORM); \
-//         InitTransform(entity, x, y, rot, scale); \
-//     } while(0)
-
-#define ADD_SPRITE(entity, texture) \
-    do { \
-        g_Engine.entityManager.AddComponentToEntity(entity, COMPONENT_SPRITE); \
-        InitSprite(entity, texture); \
-    } while(0)
 
 #define ADD_WASD_CONTROLLER(entity, speed, enabled) \
     do { \

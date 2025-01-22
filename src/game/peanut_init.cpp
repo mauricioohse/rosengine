@@ -95,7 +95,7 @@ void MakeAllPeanutsVisibleAgain() {
         if (g_Engine.entityManager.HasComponent(entity, COMPONENT_PEANUT | COMPONENT_SPRITE)) {
             // Get components
             PeanutComponent* peanut = &g_Engine.componentArrays.peanuts[entity];
-            SpriteComponent* sprite = &g_Engine.componentArrays.sprites[entity];
+            SpriteComponent* sprite = &g_Engine.componentArrays.Sprites[entity];
             
             // Reset peanut state
             peanut->wasCollected = false;

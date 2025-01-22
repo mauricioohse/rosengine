@@ -239,7 +239,6 @@ struct ComponentArrays {
 #define xcomponent(enum, type, id, ...) type##Component type##s[MAX_ENTITIES];
 #include "components/components.def"
 #undef xcomponent
-    SpriteComponent sprites[MAX_ENTITIES];
     WASDControllerComponent wasdControllers[MAX_ENTITIES];
     ColliderComponent colliders[MAX_ENTITIES];
     AnimationComponent animations[MAX_ENTITIES];
@@ -262,12 +261,3 @@ struct ComponentArrays {
         printf("ComponentArrays initialized\n");
     }
 }; 
-
-
-// extern EntityManager entityManager;
-
-// #define xcomponent(ENUM_NAME, TYPE_NAME, ID, PARAMS, CALLARGS)                   \
-// inline void ADD_##ENUM_NAME PARAMS                              \
-
-// #include "components/components.def"
-// #undef xcomponent
