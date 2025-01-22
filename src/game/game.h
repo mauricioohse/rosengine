@@ -33,8 +33,6 @@ public:
     void Cleanup();
     void Reset();
 
-    void UpdatePeanutTargets();  // Call this when peanuts are collected
-    void UpdateArrowDirection();  // Call this each frame
 
     
     EntityID squirrelEntity;
