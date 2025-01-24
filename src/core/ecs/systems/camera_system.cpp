@@ -30,14 +30,14 @@ void CameraSystem::Update(float deltaTime, EntityManager* entities, ComponentArr
 
             // Calculate target position (center of screen)
             camera->targetX = targetTransform->x - camera->viewportWidth/2;
-            camera->targetY = targetTransform->y - camera->viewportHeight/2 + 325.0f + camera->cameraKick;
+            camera->targetY = targetTransform->y - camera->viewportHeight/2 + camera->cameraKick;
 
             // Smooth follow
             camera->x += (camera->targetX - camera->x) * CAMERA_FOLLOW_SPEED*4 * deltaTime;
             camera->y += (camera->targetY - camera->y) * CAMERA_FOLLOW_SPEED * deltaTime;
 
-            // clamp at the bottom
-            camera->y = std::min((float)GAME_HEIGHT - 200, camera->y);
+            // Clamp camera to prevent showing areas outside the game world
+            //camera->y = std::max(0.0f, std::min((float)GAME_HEIGHT - camera->viewportHeight, camera->y));
         }
     }
 }

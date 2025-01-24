@@ -22,12 +22,15 @@ bool Game::Init() {
     
     g_Engine.systemManager.RegisterSystem(&backgroundSystem);
     g_Engine.systemManager.RegisterSystem(&renderSystem);
-    g_Engine.systemManager.RegisterSystem(&squirrelSystem);
+    //g_Engine.systemManager.RegisterSystem(&squirrelSystem);
     g_Engine.systemManager.RegisterSystem(&cameraSystem);
     g_Engine.systemManager.RegisterSystem(&cloudSystem);
     g_Engine.systemManager.RegisterSystem(&peanutSystem);
     g_Engine.systemManager.RegisterSystem(&collisionSystem);
     g_Engine.systemManager.RegisterSystem(&musicSystem);
+    g_Engine.systemManager.RegisterSystem(new WASDControllerSystem());
+    g_Engine.systemManager.RegisterSystem(new IcePhysicsSystem());
+    g_Engine.systemManager.RegisterSystem(new ShooterSystem());
 
     // Create background
     backgroundEntity = g_Engine.entityManager.CreateEntity();
@@ -43,9 +46,11 @@ bool Game::Init() {
     Texture* squirrelTexture = ResourceManager::GetTexture(TEXTURE_SQUIRREL_OPEN);    
     // Add basic components
     ADD_TRANSFORM(squirrelEntity, 1200.0f, 100.0f, 0.0f, 1.0f);  // Center-top of screen
-    ADD_SQUIRREL(squirrelEntity);
+    ADD_PHYSICS(squirrelEntity, 100, 2);
     ADD_SPRITE(squirrelEntity, squirrelTexture);
+    ADD_WASD_CONTROLLER(squirrelEntity, 400, 1);
     ADD_COLLIDER(squirrelEntity, 32, 32, 0, 0);
+    ADD_SHOOTER(squirrelEntity, 10.0f, 300.0f, 1.0f);
 
     // create camera
     cameraEntity = g_Engine.entityManager.CreateEntity();

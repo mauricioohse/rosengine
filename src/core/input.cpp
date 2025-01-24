@@ -1,5 +1,6 @@
 #include "input.h"
 #include <cstring>
+#include "stdio.h"
 
 // Static member initialization
 bool Input::keys[SDL_NUM_SCANCODES] = {false};
@@ -51,6 +52,7 @@ bool Input::IsKeyReleased(SDL_Scancode key) {
 }
 
 bool Input::IsMouseButtonDown(int button) {
+    printf("Mouse button %d is %s\n", button, mouseButtons[button] ? "down" : "up");
     return mouseButtons[button];
 }
 

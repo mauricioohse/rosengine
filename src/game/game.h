@@ -11,6 +11,8 @@
 #include "../core/ecs/systems/background_system.h"
 #include "../core/ecs/systems/peanut_system.h"
 #include "../core/ecs/systems/music_system.h"
+#include "../core/ecs/systems/ice_physics_system.h"
+#include "../core/ecs/systems/shooter_system.h"
 #include "../core/ecs/component_macros.h"
 
 enum GameState {

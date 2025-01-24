@@ -9,6 +9,9 @@
 #include "components/cloud_components.h"
 #include "components/background_component.h"
 #include "components/peanut_components.h"
+#include "components/physics_component.h"
+#include "components/shooter_component.h"
+#include "components/quill_component.h"
 
 // Add camera constants
 #define CAMERA_FOLLOW_SPEED 15.0f     // How fast camera catches up to target
