@@ -99,15 +99,69 @@ void Game::Update(float deltaTime) {
     HandleInput();
 
     // Get squirrel position
-    SquirrelComponent *squirrel =
-        (SquirrelComponent *)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_SQUIRREL);
+    TransformComponent* squirrelTransform =
+        (TransformComponent*)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_TRANSFORM);
 
+    if (squirrelTransform) {
+        // Check if squirrel is outside arena boundary (radius 800)
+        float dx = squirrelTransform->x;
+        float dy = squirrelTransform->y;
+        float distanceFromCenter = sqrt(dx*dx + dy*dy);
+        
+        if (distanceFromCenter > 800.0f) {
+            // Reset position to center if outside boundary
+            squirrelTransform->x = 0.0f;
+            squirrelTransform->y = 0.0f;
+            
+            // Reset velocity
+            PhysicsComponent* physics = 
+                (PhysicsComponent*)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_PHYSICS);
+            if (physics) {
+                physics->velocityX = 0.0f;
+                physics->velocityY = 0.0f;
+            }
+        }
+    }
 }
 
 void Game::Render() {
     // Systems will handle rendering of entities
     g_Engine.systemManager.UpdateSystems(g_Engine.deltaTime, &g_Engine.entityManager, &g_Engine.componentArrays);
     
+    // Get camera position
+    CameraComponent* camera = nullptr;
+    for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
+        if (g_Engine.entityManager.HasComponent(entity, COMPONENT_CAMERA)) {
+            camera = (CameraComponent*)g_Engine.componentArrays.GetComponentData(entity, COMPONENT_CAMERA);
+            break;
+        }
+    }
+    
+    if (!camera) return;
+
+    // Draw arena boundary circle
+    SDL_SetRenderDrawColor(g_Engine.window->renderer, 255, 0, 0, 255);  // Red color
+    const int SEGMENTS = 32;  // Number of line segments to draw the circle
+    const float RADIUS = 800.0f;
+    
+    for (int i = 0; i < SEGMENTS; i++) {
+        float angle1 = (float)i * 2.0f * 3.14159f / SEGMENTS;
+        float angle2 = (float)(i + 1) * 2.0f * 3.14159f / SEGMENTS;
+        
+        // Calculate world positions
+        int x1 = (int)(RADIUS * cos(angle1));
+        int y1 = (int)(RADIUS * sin(angle1));
+        int x2 = (int)(RADIUS * cos(angle2));
+        int y2 = (int)(RADIUS * sin(angle2));
+        
+        // Adjust for camera position
+        x1 -= (int)camera->x;
+        y1 -= (int)camera->y;
+        x2 -= (int)camera->x;
+        y2 -= (int)camera->y;
+        
+        SDL_RenderDrawLine(g_Engine.window->renderer, x1, y1, x2, y2);
+    }
 }
 
 void Game::Cleanup() {
