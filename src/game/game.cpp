@@ -50,7 +50,7 @@ bool Game::Init() {
     ADD_SPRITE(squirrelEntity, squirrelTexture);
     ADD_WASD_CONTROLLER(squirrelEntity, 400, 1);
     ADD_COLLIDER(squirrelEntity, 32, 32, 0, 0);
-    ADD_SHOOTER(squirrelEntity, 10.0f, 300.0f, 1.0f);
+    ADD_SHOOTER(squirrelEntity, 150.0f, 300.0f, 1.0f);
 
     // create camera
     cameraEntity = g_Engine.entityManager.CreateEntity();

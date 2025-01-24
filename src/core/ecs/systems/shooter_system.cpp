@@ -1,6 +1,7 @@
 #include "shooter_system.h"
 #include <math.h>
 #include "../../input.h"
+#include "../component_macros.h"
 
 void ShooterSystem::Init() {
     printf("ShooterSystem initialized\n");
@@ -74,13 +75,20 @@ void ShooterSystem::SpawnQuill(EntityManager* entities, ComponentArrays* compone
     entities->AddComponentToEntity(quill, COMPONENT_TRANSFORM);
     entities->AddComponentToEntity(quill, COMPONENT_QUILL);
     entities->AddComponentToEntity(quill, COMPONENT_PHYSICS);
-    entities->AddComponentToEntity(quill, COMPONENT_SPRITE);  // Assuming you have quill sprite
     entities->AddComponentToEntity(quill, COMPONENT_COLLIDER);
     
+    // Initialize sprite with peanut texture
+    Texture *quillTexture = ResourceManager::GetTexture(TEXTURE_PEANUT);
+    ADD_SPRITE(quill, quillTexture);
+
     // Initialize transform
     TransformComponent* transform = 
         (TransformComponent*)components->GetComponentData(quill, COMPONENT_TRANSFORM);
-    transform->Init(x, y, atan2f(dirY, dirX));
+    // Convert to degrees and add 90 to align sprite
+    float angle = (atan2f(dirY, dirX) * 180.0f / 3.1415) + 90.0f;
+    transform->Init(x, y, angle);
+
+    printf("quill rotation angle: %f \n", angle);
     
     // Initialize physics
     PhysicsComponent* physics = 
@@ -88,6 +96,8 @@ void ShooterSystem::SpawnQuill(EntityManager* entities, ComponentArrays* compone
     physics->Init(0.1f, 0.0f);  // Light mass, no friction
     physics->velocityX = dirX * speed;
     physics->velocityY = dirY * speed;
+    
+
     
     // Initialize quill properties
     QuillComponent* quillComp = 
