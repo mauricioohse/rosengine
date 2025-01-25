@@ -174,6 +174,47 @@ void Game::Render() {
         
         SDL_RenderDrawLine(g_Engine.window->renderer, x1, y1, x2, y2);
     }
+
+    // Draw damage percentage
+    PhysicsComponent* porcupinePhysics = 
+        (PhysicsComponent*)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_PHYSICS);
+    
+    if (porcupinePhysics) {
+        // Create text for damage display
+        char damageText[32];
+        snprintf(damageText, sizeof(damageText), "Damage: %.0f%%", porcupinePhysics->damagePercent);
+        
+        // Get font
+        Font* font = ResourceManager::GetFont(fpsFontID);
+        if (font) {
+            // Create text surface
+            SDL_Color textColor = {255, 50, 50, 255};  // Red color for damage
+            SDL_Surface* textSurface = TTF_RenderText_Solid(font->sdlFont, damageText, textColor);
+            
+            if (textSurface) {
+                // Create texture from surface
+                SDL_Texture* textTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, textSurface);
+                
+                if (textTexture) {
+                    // Position text at bottom center of screen
+                    SDL_Rect destRect;
+                    destRect.w = textSurface->w;
+                    destRect.h = textSurface->h;
+                    destRect.x = (WINDOW_WIDTH - destRect.w) / 2;  // Center horizontally
+                    destRect.y = WINDOW_HEIGHT - destRect.h - 20;  // 20 pixels from bottom
+                    
+                    // Render text
+                    SDL_RenderCopy(g_Engine.window->renderer, textTexture, NULL, &destRect);
+                    
+                    // Clean up texture
+                    SDL_DestroyTexture(textTexture);
+                }
+                
+                // Clean up surface
+                SDL_FreeSurface(textSurface);
+            }
+        }
+    }
 }
 
 void Game::Cleanup() {

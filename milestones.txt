@@ -1,82 +1,59 @@
-Game Summary
-Porcupine Arena is a top-down physics-based arena fighter where the player controls a porcupine that can only move by shooting quills (recoil-based movement). The player battles against different types of balloon enemies while trying to stay within a circular icy arena. The game features a knockback percentage system similar to Super Smash Bros.
-ECS Components Needed
-Transform Component
-Position
-Rotation
-Scale
-Physics Component
-Velocity
-Friction (for ice physics)
-Mass
-Knockback percentage
-Health Component
-Current health
-Knockback multiplier
-Damage percentage
-Shooter Component
-Fire rate
-Projectile type
-Last shot time
-Projectile Component
-Damage
-Speed
-Lifetime
-Owner entity
-AI Component
-Behavior type (for different balloon types)
-Target position
-Movement pattern
-Systems Needed
-Physics System
-Handle ice physics/sliding
-Apply forces and velocities
-Handle knockback
-Combat System
-Manage projectile collisions
-Handle damage and knockback calculations
-Process balloon explosions
-Input System
-Handle mouse input for shooting
-Calculate shooting direction
-AI System
-Control balloon movement patterns
-Manage balloon attack patterns
-Handle enemy spawning
-Arena System
-Check arena boundaries
-Handle out-of-bounds conditions
-Camera System
-Follow porcupine with smooth delay
-Handle screen shake effects
-Development Milestones
-Milestone 1: Core Mechanics (2 weeks)
-[x] Set up basic ECS architecture
-[ ] Implement ice physics system
-[ ] Create circular arena with boundaries
-[ ] Add basic porcupine movement and shooting mechanics
-[ ] Implement camera following system
-Milestone 2: Combat System (2 weeks)
-[ ] Add projectile system
-[ ] Implement knockback mechanics
-[ ] Create health/damage percentage system
-[ ] Add collision detection
-[ ] Implement basic particle effects
-Milestone 3: Enemy System (2 weeks)
-[ ] Create base balloon enemy class
-[ ] Implement red balloon behavior
-[ ] Add green balloon with laser projectiles
-[ ] Implement blue balloon with aimed shots
-[ ] Create enemy spawning system
+1. Core Components:
+   -x Transform (position, rotation, scale)
+   -x Physics (velocity, friction, mass, knockback%)
+   - Health (current HP, knockback multiplier, damage%)
+   -x Sprite (texture, visibility)
+   -x Collider (size, trigger status)
+
+2. Specialized Components:
+   -x Shooter (fire rate, projectile type, last shot time)
+   - Projectile (damage, speed, lifetime, owner)
+   - AI (behavior type, movement pattern, target pos)
+   -x ArenaBoundary (radius, safe area)
+   -x CameraFollow (target entity, follow delay)
+   - Knockback (direction, force, duration)
+   - IcePhysics (special friction values)
+
+1. Core Systems:
+   -x IcePhysicsSystem (handles sliding movement)
+   -x RecoilMovementSystem (converts shooting to movement)
+   - KnockbackSystem (manages smash-like % system)
+   - ProjectileSystem (handles quills/lasers)
+   - ArenaBoundarySystem (out-of-bounds checks)
+   - CameraFollowSystem (with smooth delay)
+
+2. Specialized Systems:
+   - BalloonAISystem (manages different balloon behaviors)
+   - LaserSystem (handles green/blue balloon attacks)
+   - HealthUISystem (knockback % display)
+   - EnemySpawnSystem (wave management)
+
+Milestone 1: Core Arena Mechanics (1.5 weeks)
+- [ ] Implement icy physics with custom friction
+- [ ] Create circular arena boundary system
+- [ ] Basic porcupine recoil movement prototype
+- [ ] Camera follow with smooth delay
+
+Milestone 2: Combat Foundation (1.5 weeks)
+- [ ] Quill shooting system with recoil
+- [ ] Knockback percentage system
+- [ ] Basic balloon collision/explosion
+- [ ] Health component integration
+
+Milestone 3: Enemy Systems (1.5 weeks)
+- [ ] Red balloon wandering AI
+- [ ] Green balloon laser patterns
+- [ ] Blue balloon aimed shots
+- [ ] Enemy spawn manager
+
 Milestone 4: Polish & Balance (1 week)
-[ ] Add sound effects and music
-[ ] Implement visual feedback (hit effects, explosions)
-[ ] Balance enemy spawn rates and difficulty
-[ ] Add score system
-[ ] Create game over condition and restart
-Milestone 5: Final Polish (1 week)
-[ ] Add menu system
-[ ] Implement difficulty progression
-[ ] Add visual polish (backgrounds, effects)
-[ ] Bug fixing and performance optimization
-[ ] Game feel improvements
+- [ ] Screen shake on explosions
+- [ ] Knockback visual feedback
+- [ ] Enemy difficulty progression
+- [ ] Arena boundary effects
+
+Milestone 5: Final Touches (0.5 week)
+- [ ] UI for knockback percentage
+- [ ] Sound effects system
+- [ ] Game over/restart flow
+- [ ] Basic particle effects
