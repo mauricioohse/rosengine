@@ -31,6 +31,7 @@ bool Game::Init() {
     g_Engine.systemManager.RegisterSystem(new WASDControllerSystem());
     g_Engine.systemManager.RegisterSystem(new IcePhysicsSystem());
     g_Engine.systemManager.RegisterSystem(new ShooterSystem());
+    g_Engine.systemManager.RegisterSystem(new BalloonSystem());
 
     // Create background
     backgroundEntity = g_Engine.entityManager.CreateEntity();
@@ -56,6 +57,17 @@ bool Game::Init() {
     cameraEntity = g_Engine.entityManager.CreateEntity();
     ADD_TRANSFORM(cameraEntity, 1200.0f, 100.0f, 0.0f, 1.0f);
     ADD_CAMERA(cameraEntity, WINDOW_WIDTH, WINDOW_HEIGHT, squirrelEntity);
+
+    // balloon test
+    EntityID balloon = g_Engine.entityManager.CreateEntity();
+    ADD_TRANSFORM(balloon, 400,400,0,1);
+    ADD_SPRITE(balloon, ResourceManager::GetTexture(TEXTURE_SQUIRREL_CLOSED));
+    ADD_COLLIDER(balloon, 64,64,0,1);
+    ADD_BALLOON(balloon, BALLOON_RED, squirrelEntity, 30, 100);
+    ADD_PHYSICS(balloon, 10, 15);
+
+
+
 
     // Store IDs for later use
     hitSoundID = SOUND_HIT;

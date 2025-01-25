@@ -9,8 +9,8 @@
    -x Shooter (fire rate, projectile type, last shot time)
    - Projectile (damage, speed, lifetime, owner)
    - AI (behavior type, movement pattern, target pos)
-   - ArenaBoundary (radius, safe area)
-   - CameraFollow (target entity, follow delay)
+   -x ArenaBoundary (radius, safe area)
+   -x CameraFollow (target entity, follow delay)
    - Knockback (direction, force, duration)
    - IcePhysics (special friction values)
 
