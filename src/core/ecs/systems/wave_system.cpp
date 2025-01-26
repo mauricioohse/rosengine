@@ -97,13 +97,13 @@ void WaveSystem::SpawnBalloon(BalloonType type, EntityManager* entities, Compone
     Texture* texture;
     switch (type) {
         case BALLOON_RED:
-            texture = ResourceManager::GetTexture(TEXTURE_SQUIRREL_CLOSED);
+            texture = ResourceManager::GetTexture(TEXTURE_BALLOON_RED);
             break;
         case BALLOON_GREEN:
-            texture = ResourceManager::GetTexture(TEXTURE_SHIELD_PEANUT);
+            texture = ResourceManager::GetTexture(TEXTURE_BALLOON_GREEN);
             break;
         case BALLOON_BLUE:
-            texture = ResourceManager::GetTexture(TEXTURE_SUPER_PEANUT);
+            texture = ResourceManager::GetTexture(TEXTURE_BALLOON_BLUE);
             break;
     }
     ADD_SPRITE(balloon, texture);

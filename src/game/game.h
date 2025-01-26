@@ -5,7 +5,7 @@
 #include "../core/ecs/systems/wasd_controller_system.h"
 #include "../core/ecs/systems/collision_system.h"
 #include "../core/ecs/systems/gravity_system.h"
-#include "../core/ecs/systems/squirrel_physics_system.h"
+// #include "../core/ecs/systems/squirrel_physics_system.h"
 #include "../core/ecs/systems/camera_system.h"
 #include "../core/ecs/systems/cloud_system.h"
 #include "../core/ecs/systems/background_system.h"
@@ -50,6 +50,8 @@ public:
     int numPeanutTargets;
     EntityID arrowEntity;  // To track the arrow sprite
     GameState gameState;
+    bool g_Porcupine_is_hit = 0;
+    int g_Porcuopine_hit_anim_timer = 0.0f;
 
     void AddScore(BalloonType balloonType);
 
@@ -59,7 +61,7 @@ private:
     WASDControllerSystem wasdSystem;
     CollisionSystem collisionSystem;
     GravitySystem gravitySystem;
-    SquirrelPhysicsSystem squirrelSystem;
+    // SquirrelPhysicsSystem squirrelSystem;
     CameraSystem cameraSystem;
     CloudSystem cloudSystem;
     BackgroundSystem backgroundSystem;

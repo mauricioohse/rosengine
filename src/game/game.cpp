@@ -56,7 +56,7 @@ bool Game::Init() {
     // Create squirrel entity
     squirrelEntity = g_Engine.entityManager.CreateEntity();
     
-    Texture* squirrelTexture = ResourceManager::GetTexture(TEXTURE_SQUIRREL_OPEN);    
+    Texture* squirrelTexture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_LEFT);    
     // Add basic components
     ADD_TRANSFORM(squirrelEntity, 1200.0f, 100.0f, 0.0f, 1.0f);  // Center-top of screen
     ADD_PHYSICS(squirrelEntity, 100, 2);
@@ -167,9 +167,39 @@ void Game::Update(float deltaTime) {
     if (comboTimer > 0) {
         comboTimer -= deltaTime;
         if (comboTimer <= 0) {
-            // Reset combo when timer expires
             comboMultiplier = 1.0f;
             printf("Combo reset!\n");  // Debug message
+        }
+    }
+
+    // Update porcupine sprite based on movement and damage
+    WASDControllerComponent* controller = 
+        (WASDControllerComponent*)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_WASD_CONTROLLER);
+    SpriteComponent* sprite = 
+        (SpriteComponent*)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_SPRITE);
+    PhysicsComponent* physics = 
+        (PhysicsComponent*)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_PHYSICS);
+
+    if (controller && sprite && physics) {
+                
+        if (g_Porcupine_is_hit){
+            g_Porcuopine_hit_anim_timer = 1.0f;
+            g_Porcupine_is_hit = 0;
+        }
+
+        // Update sprite based on movement direction and hit state
+        if (g_Porcuopine_hit_anim_timer > 0)
+        {
+            // Hit animations
+            sprite->texture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_IS_HIT);
+            g_Porcuopine_hit_anim_timer -= deltaTime;
+        }
+        else
+        {
+            // Normal movement animations
+            if (controller->moveX >= 0) sprite->texture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_RIGHT);
+            else if (controller->moveX < 0) sprite->texture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_LEFT);
+            // If not moving, keep current sprite
         }
     }
 }

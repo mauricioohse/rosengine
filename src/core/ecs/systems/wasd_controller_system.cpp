@@ -50,6 +50,9 @@ void WASDControllerSystem::Update(float deltaTime, EntityManager* entities, Comp
                 moveY /= length;
             }
 
+            controller->moveX = moveX;
+            controller->moveY = moveY;
+
             // Apply acceleration to physics velocity
             const float ACCELERATION = controller->moveSpeed * 1.0f;  // Adjust this multiplier as needed
             physics->velocityX += moveX * ACCELERATION * deltaTime;

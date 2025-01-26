@@ -110,6 +110,8 @@ void BalloonSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                                     porcupineTransform, porcupineCollider,
                                     penetrationX, penetrationY)) 
             {
+                g_Game.g_Porcupine_is_hit = true;
+
                 // Increase damage percentage
                 porcupinePhysics->damagePercent += projectile->damage;
                 
