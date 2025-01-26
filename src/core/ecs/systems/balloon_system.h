@@ -17,12 +17,16 @@ private:
                          TransformComponent* transform,
                          PhysicsComponent* physics,
                          TransformComponent* targetTransform);
-                         
+
+    void UpdateGreenBalloon(float deltaTime, BalloonComponent *balloon, TransformComponent *transform, PhysicsComponent *physics, EntityManager *entities, ComponentArrays *components);
+
+    void ShootLasers(float x, float y, EntityManager *entities, ComponentArrays *components);
+
     void HandleBalloonCollision(EntityID balloonEntity,
-                              TransformComponent* balloonTransform,
-                              TransformComponent* porcupineTransform,
-                              PhysicsComponent* porcupinePhysics,
-                              EntityManager* entities);
-                              
+                                TransformComponent *balloonTransform,
+                                TransformComponent *porcupineTransform,
+                                PhysicsComponent *porcupinePhysics,
+                                EntityManager *entities);
+
     void ExplodeBalloon(EntityID balloonEntity, EntityManager* entities);
 }; 

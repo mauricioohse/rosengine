@@ -13,3 +13,4 @@ xcomponent(PHYSICS, Physics,11,(EntityID entity, float initialMass , float iceFr
 xcomponent(QUILL, Quill,12,(EntityID entity, float dmg, float life, EntityID own), ( dmg,  life,  own) )
 xcomponent(SHOOTER, Shooter,13,(EntityID entity, float qSpeed, float rForce, float fRate), ( qSpeed, rForce, fRate) )
 xcomponent(BALLOON, Balloon,14,(EntityID entity, BalloonType type, EntityID target, float speed, float health), (type, target, speed, health))
+xcomponent(PROJECTILE, Projectile, 15, (EntityID entity, float damage, float lifetime, float directionX, float directionY, float knockback), (damage, lifetime, directionX, directionY, knockback))

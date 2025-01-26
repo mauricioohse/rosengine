@@ -13,7 +13,9 @@ struct BalloonComponent : Component {
     EntityID targetEntity;  // Usually the porcupine
     float moveSpeed;        // Base movement speed
     float health;          // Current health
-    
+    float shootTimer;    // Timer for shooting lasers
+    float orbitAngle;    // Angle for circular movement
+
     void Init(BalloonType balloonType = BALLOON_RED, 
               EntityID target = 0, 
               float speed = 200.0f, 
@@ -23,11 +25,15 @@ struct BalloonComponent : Component {
         targetEntity = target;
         moveSpeed = speed;
         health = initialHealth;
+        shootTimer = 0.0f;
+        orbitAngle = 0.0f;
     }
     
     void Destroy() override {
         targetEntity = 0;
         moveSpeed = 0.0f;
         health = 0.0f;
+        shootTimer = 0.0f;
+        orbitAngle = 0.0f;
     }
 }; 

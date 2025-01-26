@@ -1,26 +1,26 @@
 1. Core Components:
    -x Transform (position, rotation, scale)
    -x Physics (velocity, friction, mass, knockback%)
-   - Health (current HP, knockback multiplier, damage%)
+   -x Health (current HP, knockback multiplier, damage%)
    -x Sprite (texture, visibility)
    -x Collider (size, trigger status)
 
 2. Specialized Components:
    -x Shooter (fire rate, projectile type, last shot time)
-   - Projectile (damage, speed, lifetime, owner)
+   -x Projectile (damage, speed, lifetime, owner)
    - AI (behavior type, movement pattern, target pos)
    -x ArenaBoundary (radius, safe area)
    -x CameraFollow (target entity, follow delay)
-   - Knockback (direction, force, duration)
-   - IcePhysics (special friction values)
+   -x Knockback (direction, force, duration)
+   -x IcePhysics (special friction values)
 
 1. Core Systems:
    -x IcePhysicsSystem (handles sliding movement)
    -x RecoilMovementSystem (converts shooting to movement)
-   - KnockbackSystem (manages smash-like % system)
-   - ProjectileSystem (handles quills/lasers)
-   - ArenaBoundarySystem (out-of-bounds checks)
-   - CameraFollowSystem (with smooth delay)
+   -x KnockbackSystem (manages smash-like % system)
+   -x ProjectileSystem (handles quills/lasers)
+   -x ArenaBoundarySystem (out-of-bounds checks)
+   -x CameraFollowSystem (with smooth delay)
 
 2. Specialized Systems:
    - BalloonAISystem (manages different balloon behaviors)
