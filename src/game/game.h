@@ -17,9 +17,11 @@
 #include "../core/ecs/systems/wave_system.h"
 #include "../core/ecs/component_macros.h"
 
+// Add new game state
 enum GameState {
+    GAME_STATE_START,    // New state for start screen
     GAME_STATE_PLAYING,
-    GAME_STATE_FINISHED
+    GAME_STATE_GAMEOVER
 };
 
 struct PeanutTarget {
@@ -47,6 +49,7 @@ public:
     PeanutTarget peanutTargets[MAX_PEANUT_TARGETS];
     int numPeanutTargets;
     EntityID arrowEntity;  // To track the arrow sprite
+    GameState gameState;
 
 
 private:
@@ -61,6 +64,7 @@ private:
     BackgroundSystem backgroundSystem;
     PeanutSystem peanutSystem;
     MusicSystem musicSystem;
+    WaveSystem waveSystem;
     
     // Entities
     EntityID backgroundEntity;
@@ -71,7 +75,6 @@ private:
     FontID fpsFontID;
     
     float gameTimer;  // Track elapsed time in seconds
-    GameState gameState;
     bool isNewRecord;  // To track if current time is best time
     float bestTime;    // Store best completion time
 

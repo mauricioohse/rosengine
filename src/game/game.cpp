@@ -10,6 +10,8 @@ Game g_Game;
 
 #define DEBUG_COLLISION 1
 
+
+
 bool Game::Init() {
     // Initialize systems
     // renderSystem.Init();
@@ -34,7 +36,7 @@ bool Game::Init() {
     g_Engine.systemManager.RegisterSystem(new IcePhysicsSystem());
     g_Engine.systemManager.RegisterSystem(new ShooterSystem());
     g_Engine.systemManager.RegisterSystem(new BalloonSystem());
-    g_Engine.systemManager.RegisterSystem(new WaveSystem());
+    g_Engine.systemManager.RegisterSystem(&waveSystem);
 
     // Create background
     backgroundEntity = g_Engine.entityManager.CreateEntity();
@@ -69,8 +71,9 @@ bool Game::Init() {
     gameTimer = 0.0f;
 
 
-    gameState = GAME_STATE_PLAYING;
-    bestTime = 999999.0f;  // Some high number
+    // Start in START state instead of PLAYING
+    gameState = GAME_STATE_START;
+    bestTime = 0.0f;
     isNewRecord = false;
 
     // Create arrow entity
@@ -84,6 +87,19 @@ bool Game::Init() {
 
 // logic related to inputs on the game should go here
 void Game::HandleInput(){
+    // Check for game start inputs when in start state
+    if (gameState == GAME_STATE_START) {
+        if (Input::IsKeyPressed(SDL_SCANCODE_W) || 
+            Input::IsKeyPressed(SDL_SCANCODE_A) || 
+            Input::IsKeyPressed(SDL_SCANCODE_S) || 
+            Input::IsKeyPressed(SDL_SCANCODE_D) || 
+            Input::IsKeyPressed(SDL_SCANCODE_SPACE) ||
+            Input::mouseButtonsPressed[0]) {
+            
+            gameState = GAME_STATE_PLAYING;
+            return;
+        }
+    }
 
     // Play sound on mouse click
     if (Input::mouseButtonsPressed[0]) {  // Left click
@@ -101,6 +117,11 @@ void Game::HandleInput(){
 
 void Game::Update(float deltaTime) {
     HandleInput();
+
+    // Only update timer if game is being played
+    if (gameState == GAME_STATE_PLAYING) {
+        gameTimer += deltaTime;
+    }
 
     // Get squirrel position
     TransformComponent* squirrelTransform =
@@ -124,12 +145,14 @@ void Game::Update(float deltaTime) {
                 physics->velocityX = 0.0f;
                 physics->velocityY = 0.0f;
             }
+
+            Reset();
         }
     }
 }
 
 void Game::Render() {
-    // Systems will handle rendering of entities
+    // Always render game world
     g_Engine.systemManager.UpdateSystems(g_Engine.deltaTime, &g_Engine.entityManager, &g_Engine.componentArrays);
     
     // Get camera position
@@ -243,6 +266,84 @@ void Game::Render() {
             }
         }
     }
+
+    // Draw score if game is being played or just ended
+    if (gameTimer > 0) {
+        // Get font
+        Font* font = ResourceManager::GetFont(fpsFontID);
+        if (font) {
+            // Create score text
+            char scoreText[64];
+            snprintf(scoreText, sizeof(scoreText), "Time: %.1f seconds", gameTimer);
+            
+            if (isNewRecord) {
+                snprintf(scoreText, sizeof(scoreText), "New Record! %.1f seconds", gameTimer);
+            }
+            
+            // Create text surface
+            SDL_Color textColor = {255, 255, 255, 255};
+            SDL_Surface* textSurface = TTF_RenderText_Solid(font->sdlFont, scoreText, textColor);
+            
+            if (textSurface) {
+                SDL_Texture* textTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, textSurface);
+                if (textTexture) {
+                    SDL_Rect destRect;
+                    destRect.w = textSurface->w;
+                    destRect.h = textSurface->h;
+                    destRect.x = (WINDOW_WIDTH - destRect.w) / 2;  // Center horizontally
+                    destRect.y = 20;  // Near top of screen
+                    
+                    SDL_RenderCopy(g_Engine.window->renderer, textTexture, NULL, &destRect);
+                    SDL_DestroyTexture(textTexture);
+                }
+                SDL_FreeSurface(textSurface);
+            }
+        }
+    }
+
+    // Modify start screen to show best time
+    if (gameState == GAME_STATE_START) {
+        Font* font = ResourceManager::GetFont(fpsFontID);
+        if (font) {
+            SDL_Color textColor = {255, 255, 255, 255};
+            
+            const char* controls[] = {
+                "WASD for movement",
+                "Left click to shoot quills",
+                "",
+                "",
+                bestTime > 0 ? "Best Time: %.1f seconds" : "",
+                "",
+                "Press any key to start"
+            };
+            
+            // Render each line of text
+            for (int i = 0; i < 7; i++) {
+                char lineBuffer[64];
+                if (i == 4 && bestTime > 0) {
+                    snprintf(lineBuffer, sizeof(lineBuffer), controls[i], bestTime);
+                } else {
+                    strncpy(lineBuffer, controls[i], sizeof(lineBuffer));
+                }
+                
+                SDL_Surface* textSurface = TTF_RenderText_Solid(font->sdlFont, lineBuffer, textColor);
+                if (textSurface) {
+                    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, textSurface);
+                    if (textTexture) {
+                        SDL_Rect destRect;
+                        destRect.w = textSurface->w;
+                        destRect.h = textSurface->h;
+                        destRect.x = (WINDOW_WIDTH - destRect.w) / 2;
+                        destRect.y = (WINDOW_HEIGHT / 2) - (120 - i * 40);
+                        
+                        SDL_RenderCopy(g_Engine.window->renderer, textTexture, NULL, &destRect);
+                        SDL_DestroyTexture(textTexture);
+                    }
+                    SDL_FreeSurface(textSurface);
+                }
+            }
+        }
+    }
 }
 
 void Game::Cleanup() {
@@ -251,10 +352,33 @@ void Game::Cleanup() {
 }
 
 void Game::Reset() {
-    // Reset game state
-    gameState = GAME_STATE_PLAYING;
-    gameTimer = 0.0f;
-    isNewRecord = false;
+    // Check for new record
+    if (gameTimer > bestTime) {
+        bestTime = gameTimer;
+        isNewRecord = true;
+    } else {
+        isNewRecord = false;
+    }
     
+    // Clean up all balloons and their projectiles
+    for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
+        // Remove all balloons
+        if (g_Engine.entityManager.HasComponent(entity, COMPONENT_BALLOON)) {
+            g_Engine.entityManager.DestroyEntity(entity);
+            continue;
+        }
+        
+        // Remove all projectiles (both balloon shots and porcupine quills)
+        if (g_Engine.entityManager.HasComponent(entity, COMPONENT_PROJECTILE)) {
+            g_Engine.entityManager.DestroyEntity(entity);
+        }
+    }
+    
+    // Reset wave system
+    waveSystem.ResetWaves();
+
+    // Reset to start screen
+    gameState = GAME_STATE_START;
+    gameTimer = 0.0f;
 }
 

@@ -32,6 +32,11 @@ void WaveSystem::Init() {
 }
 
 void WaveSystem::Update(float deltaTime, EntityManager* entities, ComponentArrays* components) {
+    // Only update waves if game is in playing state
+    if (g_Game.gameState != GAME_STATE_PLAYING) {
+        return;
+    }
+
     // Check if wave is complete
     if (NoBalloonsRemaining(entities)) {
         currentWave++;

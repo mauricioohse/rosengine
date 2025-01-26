@@ -32,4 +32,9 @@ public:
     void Init() override;
     void Update(float deltaTime, EntityManager* entities, ComponentArrays* components) override;
     void Destroy() override;
+    void ResetWaves() {
+        currentWave = 0;
+        currentCycle = 0;
+        spawnTimer = 0.0f;
+    }
 }; 
