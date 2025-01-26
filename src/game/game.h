@@ -51,6 +51,7 @@ public:
     EntityID arrowEntity;  // To track the arrow sprite
     GameState gameState;
 
+    void AddScore(BalloonType balloonType);
 
 private:
     // Systems
@@ -78,7 +79,19 @@ private:
     bool isNewRecord;  // To track if current time is best time
     float bestTime;    // Store best completion time
 
+    // Scoring system
+    int currentScore;
+    int bestScore;
+    float comboMultiplier;
+    float comboTimer;
     
+    // Declare constants (but don't define them here)
+    static const float COMBO_TIME_LIMIT;
+    static const float COMBO_MULTIPLIER_INCREASE;
+    static const float MAX_COMBO_MULTIPLIER;
+    static const int SCORE_RED_BALLOON;
+    static const int SCORE_GREEN_BALLOON;
+    static const int SCORE_BLUE_BALLOON;
 };
 
 extern Game g_Game;  // Global game instance 

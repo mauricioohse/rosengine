@@ -5,12 +5,19 @@
 #include "cloud_init.h"
 #include "peanut_init.h"
 #include <math.h>
+#include <algorithm>
 
 Game g_Game;
 
 #define DEBUG_COLLISION 1
 
-
+// Define the static constants
+const float Game::COMBO_TIME_LIMIT = 3.0f;
+const float Game::COMBO_MULTIPLIER_INCREASE = 0.5f;
+const float Game::MAX_COMBO_MULTIPLIER = 4.0f;
+const int Game::SCORE_RED_BALLOON = 100;
+const int Game::SCORE_GREEN_BALLOON = 200;
+const int Game::SCORE_BLUE_BALLOON = 300;
 
 bool Game::Init() {
     // Initialize systems
@@ -41,7 +48,7 @@ bool Game::Init() {
     // Create background
     backgroundEntity = g_Engine.entityManager.CreateEntity();
     Texture* backgroundTexture = ResourceManager::GetTexture(TEXTURE_BACKGROUND_MIDDLE);
-    ADD_TRANSFORM(backgroundEntity, -600.0f, 0.0f, 0.0f, 1.0f);
+    ADD_TRANSFORM(backgroundEntity, 0.0f, 0.0f, 0.0f, 1.0f);
     ADD_SPRITE(backgroundEntity, backgroundTexture);
     ADD_BACKGROUND(backgroundEntity, 0.5f);  // 0.5 parallax factor for medium depth
 
@@ -56,7 +63,7 @@ bool Game::Init() {
     ADD_SPRITE(squirrelEntity, squirrelTexture);
     ADD_WASD_CONTROLLER(squirrelEntity, 400, 1);
     ADD_COLLIDER(squirrelEntity, 32, 32, 0, 0);
-    ADD_SHOOTER(squirrelEntity, 150.0f, 300.0f, 1.0f);
+    ADD_SHOOTER(squirrelEntity, 300.0f, 300.0f, 1.0f);
 
     // create camera
     cameraEntity = g_Engine.entityManager.CreateEntity();
@@ -82,6 +89,12 @@ bool Game::Init() {
     ADD_TRANSFORM(arrowEntity, 0.0f, 0.0f, 0.0f, 1.0f);
     ADD_SPRITE(arrowEntity, arrowTexture);
 
+    // Initialize scoring system
+    currentScore = 0;
+    bestScore = 0;
+    comboMultiplier = 1.0f;
+    comboTimer = 0.0f;
+    
     return true;
 }
 
@@ -147,6 +160,16 @@ void Game::Update(float deltaTime) {
             }
 
             Reset();
+        }
+    }
+
+    // Update combo timer
+    if (comboTimer > 0) {
+        comboTimer -= deltaTime;
+        if (comboTimer <= 0) {
+            // Reset combo when timer expires
+            comboMultiplier = 1.0f;
+            printf("Combo reset!\n");  // Debug message
         }
     }
 }
@@ -267,41 +290,38 @@ void Game::Render() {
         }
     }
 
-    // Draw score if game is being played or just ended
-    if (gameTimer > 0) {
-        // Get font
-        Font* font = ResourceManager::GetFont(fpsFontID);
-        if (font) {
-            // Create score text
-            char scoreText[64];
-            snprintf(scoreText, sizeof(scoreText), "Time: %.1f seconds", gameTimer);
-            
-            if (isNewRecord) {
-                snprintf(scoreText, sizeof(scoreText), "New Record! %.1f seconds", gameTimer);
+    // Draw score and combo
+    Font* font = ResourceManager::GetFont(fpsFontID);
+    if (font) {
+        SDL_Color textColor = {255, 255, 255, 255};
+        
+        // Create score text
+        char scoreText[64];
+        if (comboMultiplier > 1.0f) {
+            snprintf(scoreText, sizeof(scoreText), "Score: %d (%.1fx)", currentScore, comboMultiplier);
+        } else {
+            snprintf(scoreText, sizeof(scoreText), "Score: %d", currentScore);
+        }
+        
+        // Create text surface
+        SDL_Surface* textSurface = TTF_RenderText_Solid(font->sdlFont, scoreText, textColor);
+        if (textSurface) {
+            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, textSurface);
+            if (textTexture) {
+                SDL_Rect destRect;
+                destRect.w = textSurface->w;
+                destRect.h = textSurface->h;
+                destRect.x = (WINDOW_WIDTH - destRect.w) / 2;  // Center horizontally
+                destRect.y = 20;  // Near top of screen
+                
+                SDL_RenderCopy(g_Engine.window->renderer, textTexture, NULL, &destRect);
+                SDL_DestroyTexture(textTexture);
             }
-            
-            // Create text surface
-            SDL_Color textColor = {255, 255, 255, 255};
-            SDL_Surface* textSurface = TTF_RenderText_Solid(font->sdlFont, scoreText, textColor);
-            
-            if (textSurface) {
-                SDL_Texture* textTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, textSurface);
-                if (textTexture) {
-                    SDL_Rect destRect;
-                    destRect.w = textSurface->w;
-                    destRect.h = textSurface->h;
-                    destRect.x = (WINDOW_WIDTH - destRect.w) / 2;  // Center horizontally
-                    destRect.y = 20;  // Near top of screen
-                    
-                    SDL_RenderCopy(g_Engine.window->renderer, textTexture, NULL, &destRect);
-                    SDL_DestroyTexture(textTexture);
-                }
-                SDL_FreeSurface(textSurface);
-            }
+            SDL_FreeSurface(textSurface);
         }
     }
 
-    // Modify start screen to show best time
+    // Modify start screen to show best score
     if (gameState == GAME_STATE_START) {
         Font* font = ResourceManager::GetFont(fpsFontID);
         if (font) {
@@ -311,17 +331,16 @@ void Game::Render() {
                 "WASD for movement",
                 "Left click to shoot quills",
                 "",
-                "",
-                bestTime > 0 ? "Best Time: %.1f seconds" : "",
+                bestScore > 0 ? "Best Score: %d" : "",
                 "",
                 "Press any key to start"
             };
             
             // Render each line of text
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < 6; i++) {
                 char lineBuffer[64];
-                if (i == 4 && bestTime > 0) {
-                    snprintf(lineBuffer, sizeof(lineBuffer), controls[i], bestTime);
+                if (i == 3 && bestScore > 0) {
+                    snprintf(lineBuffer, sizeof(lineBuffer), controls[i], bestScore);
                 } else {
                     strncpy(lineBuffer, controls[i], sizeof(lineBuffer));
                 }
@@ -344,6 +363,96 @@ void Game::Render() {
             }
         }
     }
+
+    // Draw indicators for off-screen balloons
+    const float TRIANGLE_SIZE = 15.0f;    // Length of the triangle
+    const float TRIANGLE_WIDTH = 10.0f;   // Width of triangle base
+    const int INDICATOR_MARGIN = 40;      // Distance from screen edge
+    
+    for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
+        if (g_Engine.entityManager.HasComponent(entity, COMPONENT_BALLOON | COMPONENT_TRANSFORM)) {
+            TransformComponent* balloonTransform = 
+                (TransformComponent*)g_Engine.componentArrays.GetComponentData(entity, COMPONENT_TRANSFORM);
+            BalloonComponent* balloon = 
+                (BalloonComponent*)g_Engine.componentArrays.GetComponentData(entity, COMPONENT_BALLOON);
+            
+            if (!balloonTransform || !balloon) continue;
+            
+            // Get balloon's screen position (relative to camera)
+            float screenX = balloonTransform->x - camera->x;
+            float screenY = balloonTransform->y - camera->y;
+            
+            // Check if balloon is off screen
+            if (screenX < 0 || screenX > WINDOW_WIDTH || 
+                screenY < 0 || screenY > WINDOW_HEIGHT) {
+                
+                // Set color based on balloon type
+                switch (balloon->type) {
+                    case BALLOON_RED:
+                        SDL_SetRenderDrawColor(g_Engine.window->renderer, 255, 50, 50, 255);
+                        break;
+                    case BALLOON_GREEN:
+                        SDL_SetRenderDrawColor(g_Engine.window->renderer, 50, 255, 50, 255);
+                        break;
+                    case BALLOON_BLUE:
+                        SDL_SetRenderDrawColor(g_Engine.window->renderer, 50, 50, 255, 255);
+                        break;
+                    default:
+                        SDL_SetRenderDrawColor(g_Engine.window->renderer, 255, 255, 255, 255);
+                }
+                
+                // Calculate angle to balloon from screen center
+                float dx = screenX - WINDOW_WIDTH/2;
+                float dy = screenY - WINDOW_HEIGHT/2;
+                float angle = atan2(dy, dx);
+                
+                // Calculate indicator position on screen edge
+                float indicatorX = WINDOW_WIDTH/2 + cos(angle) * (WINDOW_WIDTH/2 - INDICATOR_MARGIN);
+                float indicatorY = WINDOW_HEIGHT/2 + sin(angle) * (WINDOW_HEIGHT/2 - INDICATOR_MARGIN);
+                
+                // Clamp to screen bounds
+                indicatorX = std::max(INDICATOR_MARGIN, std::min(WINDOW_WIDTH - INDICATOR_MARGIN, (int)indicatorX));
+                indicatorY = std::max(INDICATOR_MARGIN, std::min(WINDOW_HEIGHT - INDICATOR_MARGIN, (int)indicatorY));
+                
+
+                // Calculate triangle points
+                float tipX = indicatorX + cos(angle) * TRIANGLE_SIZE;
+                float tipY = indicatorY + sin(angle) * TRIANGLE_SIZE;
+                float base1X = indicatorX + cos(angle - M_PI/2) * TRIANGLE_WIDTH;
+                float base1Y = indicatorY + sin(angle - M_PI/2) * TRIANGLE_WIDTH;
+                float base2X = indicatorX + cos(angle + M_PI/2) * TRIANGLE_WIDTH;
+                float base2Y = indicatorY + sin(angle + M_PI/2) * TRIANGLE_WIDTH;
+
+                // Fill the triangle using horizontal scan lines
+                int minY = (int)std::min({tipY, base1Y, base2Y});
+                int maxY = (int)std::max({tipY, base1Y, base2Y});
+
+                for (int y = minY; y <= maxY; y++) {
+                    // For each horizontal line, find intersections with triangle edges
+                    std::vector<float> intersections;
+                    
+                    // Check each edge of the triangle
+                    auto addIntersection = [&intersections, y](float x1, float y1, float x2, float y2) {
+                        if ((y1 <= y && y2 > y) || (y2 <= y && y1 > y)) {
+                            float x = x1 + (y - y1) * (x2 - x1) / (y2 - y1);
+                            intersections.push_back(x);
+                        }
+                    };
+
+                    addIntersection(tipX, tipY, base1X, base1Y);
+                    addIntersection(base1X, base1Y, base2X, base2Y);
+                    addIntersection(base2X, base2Y, tipX, tipY);
+
+                    if (intersections.size() >= 2) {
+                        std::sort(intersections.begin(), intersections.end());
+                        SDL_RenderDrawLine(g_Engine.window->renderer, 
+                            (int)intersections[0], y, 
+                            (int)intersections[1], y);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void Game::Cleanup() {
@@ -353,12 +462,17 @@ void Game::Cleanup() {
 
 void Game::Reset() {
     // Check for new record
-    if (gameTimer > bestTime) {
-        bestTime = gameTimer;
+    if (currentScore > bestScore) {
+        bestScore = currentScore;
         isNewRecord = true;
     } else {
         isNewRecord = false;
     }
+    
+    // Reset scoring
+    currentScore = 0;
+    comboMultiplier = 1.0f;
+    comboTimer = 0.0f;
     
     // Clean up all balloons and their projectiles
     for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
@@ -380,5 +494,31 @@ void Game::Reset() {
     // Reset to start screen
     gameState = GAME_STATE_START;
     gameTimer = 0.0f;
+}
+
+void Game::AddScore(BalloonType balloonType) {
+    // Calculate base score based on balloon type
+    int baseScore = 0;
+    switch (balloonType) {
+        case BALLOON_RED:
+            baseScore = SCORE_RED_BALLOON;
+            break;
+        case BALLOON_GREEN:
+            baseScore = SCORE_GREEN_BALLOON;
+            break;
+        case BALLOON_BLUE:
+            baseScore = SCORE_BLUE_BALLOON;
+            break;
+    }
+    
+    // Apply combo multiplier
+    currentScore += (int)(baseScore * comboMultiplier);
+    
+    // Increase combo
+    comboMultiplier = std::min(comboMultiplier + COMBO_MULTIPLIER_INCREASE, MAX_COMBO_MULTIPLIER);
+    comboTimer = COMBO_TIME_LIMIT;  // Reset combo timer
+
+    printf("Score added: %d (base: %d, combo: %.1fx)\n", 
+           (int)(baseScore * comboMultiplier), baseScore, comboMultiplier);
 }
 

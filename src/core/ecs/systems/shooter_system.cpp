@@ -3,6 +3,7 @@
 #include "../../input.h"
 #include "../component_macros.h"
 #include "balloon_system.h"
+#include "../../../game/game.h"
 
 void ShooterSystem::Init() {
     printf("ShooterSystem initialized\n");
@@ -99,7 +100,7 @@ void ShooterSystem::SpawnQuill(EntityManager* entities, ComponentArrays* compone
     physics->Init(0.1f, 0.0f);  // Light mass, no friction
     
     // Add owner's velocity to quill's initial velocity
-    if (ownerPhysics) {
+    if (0) { //ownerPhysics) {
         physics->velocityX = (dirX * speed) + ownerPhysics->velocityX;
         physics->velocityY = (dirY * speed) + ownerPhysics->velocityY;
     } else {
@@ -158,6 +159,16 @@ void ShooterSystem::UpdateQuills(float deltaTime, EntityManager* entities, Compo
                                             balloonTransform, balloonCollider,
                                             penetrationX, penetrationY)) 
                     {
+
+                        // Get balloon type before destroying it
+                        BalloonComponent *balloon =
+                            (BalloonComponent *)g_Engine.componentArrays.GetComponentData(balloonEntity, COMPONENT_BALLOON);
+                        if (balloon)
+                        {
+                            // Add score based on balloon type
+                            g_Game.AddScore(balloon->type);
+                        }
+
                         // Apply a small knockback to balloon before destroying (visual effect)
                         PhysicsComponent* quillPhysics = 
                             (PhysicsComponent*)components->GetComponentData(entity, COMPONENT_PHYSICS);

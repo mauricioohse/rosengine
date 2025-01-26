@@ -335,6 +335,8 @@ void BalloonSystem::HandleBalloonCollision(EntityID balloonEntity,
                                          PhysicsComponent* porcupinePhysics,
                                          EntityManager* entities) 
 {
+
+
     // Calculate direction from balloon to porcupine
     float dx = porcupineTransform->x - balloonTransform->x;
     float dy = porcupineTransform->y - balloonTransform->y;
