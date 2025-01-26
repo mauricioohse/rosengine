@@ -194,7 +194,11 @@ struct CameraComponent : Component {
     float viewportWidth;     // Width of the camera view
     float viewportHeight;    // Height of the camera view
     EntityID targetEntity;   // Entity the camera should follow
-    float cameraKick;  
+    float cameraKick;
+    
+    // Screen shake properties
+    float shakeAmount;       // Intensity of the shake
+    float shakeTimer;        // Duration of the shake
     
     // Bounds for camera movement
     float minX, maxX;        // Horizontal bounds
@@ -207,8 +211,10 @@ struct CameraComponent : Component {
         viewportHeight = height;
         targetEntity = target;
         cameraKick = 0;
+        shakeAmount = 0.0f;
+        shakeTimer = 0.0f;
         
-        // Set reasonable bounds for our game world (3 windows wide, 50 windows tall)
+        // Set reasonable bounds for our game world
         minX = 0.0f;
         maxX = width * 3.0f;
         minY = 0.0f;
@@ -222,6 +228,8 @@ struct CameraComponent : Component {
         targetEntity = 0;
         minX = minY = 0.0f;
         maxX = maxY = 0.0f;
+        shakeAmount = 0.0f;
+        shakeTimer = 0.0f;
     }
 };
 

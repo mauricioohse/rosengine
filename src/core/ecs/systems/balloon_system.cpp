@@ -121,6 +121,14 @@ void BalloonSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                 porcupinePhysics->velocityX += projectile->directionX * scaledKnockback;
                 porcupinePhysics->velocityY += projectile->directionY * scaledKnockback;
                 
+                // Add screen shake (less intense for projectile hits)
+                CameraComponent* camera = (CameraComponent*)components->GetComponentData(
+                    g_Game.cameraEntity, COMPONENT_CAMERA);
+                if (camera) {
+                    camera->shakeAmount = 8.0f;   // Medium shake for projectile hits
+                    camera->shakeTimer = 0.2f;    // Shorter duration
+                }
+                
                 // Destroy the laser
                 entities->DestroyEntity(entity);
             }
@@ -352,6 +360,14 @@ void BalloonSystem::HandleBalloonCollision(EntityID balloonEntity,
     float scaledKnockback = KNOCKBACK_FORCE * porcupinePhysics->knockbackMultiplier;
     porcupinePhysics->velocityX += dx * scaledKnockback;
     porcupinePhysics->velocityY += dy * scaledKnockback;
+    
+    // Add screen shake (more intense for direct balloon hits)
+    CameraComponent* camera = (CameraComponent*)g_Engine.componentArrays.GetComponentData(
+        g_Game.cameraEntity, COMPONENT_CAMERA);
+    if (camera) {
+        camera->shakeAmount = 15.0f;  // Strong shake for balloon collision
+        camera->shakeTimer = 0.3f;    // Duration of shake
+    }
     
     // Destroy the balloon
     ExplodeBalloon(balloonEntity, entities);
