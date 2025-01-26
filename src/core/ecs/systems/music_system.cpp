@@ -55,21 +55,21 @@ void MusicSystem::UpdateHelicopterSound(EntityID helicopterEntity, EntityID squi
         volume = (int)(volumeRatio * 128 / 4);
     }
 
-    // Start playing helicopter sound if not already playing
-    if (volume > 0) {
-        if (!isHelicopterPlaying) {
-            Sound* heliSound = ResourceManager::GetSound(helicopterSoundID);
-            if (heliSound) {
-                heliSound->sdlChunk->volume = volume;
-                helicopterChannel = Mix_PlayChannel(-1, heliSound->sdlChunk, -1);  // Loop infinitely
-                isHelicopterPlaying = true;
-            }
-        }
-    } else if (isHelicopterPlaying) {
-        // Stop helicopter sound when too far
-        Mix_HaltChannel(helicopterChannel);
-        isHelicopterPlaying = false;
-    }
+    // // Start playing helicopter sound if not already playing
+    // if (volume > 0) {
+    //     if (!isHelicopterPlaying) {
+    //         Sound* heliSound = ResourceManager::GetSound(helicopterSoundID);
+    //         if (heliSound) {
+    //             heliSound->sdlChunk->volume = volume;
+    //             helicopterChannel = Mix_PlayChannel(-1, heliSound->sdlChunk, -1);  // Loop infinitely
+    //             isHelicopterPlaying = true;
+    //         }
+    //     }
+    // } else if (isHelicopterPlaying) {
+    //     // Stop helicopter sound when too far
+    //     Mix_HaltChannel(helicopterChannel);
+    //     isHelicopterPlaying = false;
+    // }
 }
 
 void MusicSystem::UpdateWindSound(EntityID squirrelEntity) {

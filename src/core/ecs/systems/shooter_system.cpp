@@ -71,6 +71,17 @@ void ShooterSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
 void ShooterSystem::SpawnQuill(EntityManager* entities, ComponentArrays* components,
                               float x, float y, float dirX, float dirY, 
                               float speed, EntityID owner) {
+    // Play quill shooting sound with random pitch
+    Sound* quillSound = ResourceManager::GetSound(SOUND_QUILL);
+    if (quillSound) {
+        int channel = Mix_PlayChannel(-1, quillSound->sdlChunk, 0);
+        if (channel != -1) {
+            // Random pitch between 0.8 and 1.2 (80% to 120% of normal speed)
+            int randomPitch = 80 + (rand() % 41);  // Random value between 80 and 120
+            Mix_SetDistance(channel, randomPitch);
+        }
+    }
+
     EntityID quill = entities->CreateEntity();
     
     // Add components

@@ -108,13 +108,13 @@ void Game::HandleInput(){
         }
     }
 
-    // Play sound on mouse click
-    if (Input::mouseButtonsPressed[0]) {  // Left click
-        Sound* hitSound = ResourceManager::GetSound(SOUND_HIT);
-        if (hitSound) {
-            Mix_PlayChannel(-1, hitSound->sdlChunk, 0);
-        }
-    }
+    // // Play sound on mouse click
+    // if (Input::mouseButtonsPressed[0]) {  // Left click
+    //     Sound* hitSound = ResourceManager::GetSound(SOUND_HIT);
+    //     if (hitSound) {
+    //         Mix_PlayChannel(-1, hitSound->sdlChunk, 0);
+    //     }
+    // }
     
     // Add reset on 'R' key press
     if (Input::IsKeyPressed(SDL_SCANCODE_R)) {
@@ -141,17 +141,7 @@ void Game::Update(float deltaTime) {
         float distanceFromCenter = sqrt(dx*dx + dy*dy);
         
         if (distanceFromCenter > 800.0f) {
-            // Reset position to center if outside boundary
-            squirrelTransform->x = 0.0f;
-            squirrelTransform->y = 0.0f;
-            
-            // Reset velocity
-            PhysicsComponent* physics = 
-                (PhysicsComponent*)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_PHYSICS);
-            if (physics) {
-                physics->velocityX = 0.0f;
-                physics->velocityY = 0.0f;
-            }
+
 
             Reset();
         }
@@ -515,7 +505,24 @@ void Game::Reset() {
             g_Engine.entityManager.DestroyEntity(entity);
         }
     }
-    
+
+    // Reset position to center if outside boundary
+    TransformComponent* squirrelTransform = 
+        (TransformComponent*)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_TRANSFORM);
+    if (squirrelTransform) {
+        squirrelTransform->x = 0.0f;
+        squirrelTransform->y = 0.0f;
+    }
+
+    // Reset velocity
+    PhysicsComponent *physics =
+        (PhysicsComponent *)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_PHYSICS);
+    if (physics)
+    {
+        physics->velocityX = 0.0f;
+        physics->velocityY = 0.0f;
+    }
+
     // Reset wave system
     waveSystem.ResetWaves();
 

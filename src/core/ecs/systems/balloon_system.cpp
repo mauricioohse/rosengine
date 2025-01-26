@@ -113,6 +113,12 @@ void BalloonSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
             {
                 g_Game.g_Porcupine_is_hit = true;
 
+                // Play hit sound
+                Sound* hitSound = ResourceManager::GetSound(SOUND_HIT);
+                if (hitSound) {
+                    Mix_PlayChannel(-1, hitSound->sdlChunk, 0);
+                }
+
                 // Increase damage percentage
                 porcupinePhysics->damagePercent += projectile->damage;
                 
@@ -340,6 +346,11 @@ void BalloonSystem::HandleBalloonCollision(EntityID balloonEntity,
 {
     g_Game.g_Porcupine_is_hit = true;
 
+    // Play hit sound
+    Sound* hitSound = ResourceManager::GetSound(SOUND_HIT);
+    if (hitSound) {
+        Mix_PlayChannel(-1, hitSound->sdlChunk, 0);
+    }
 
     // Calculate direction from balloon to porcupine
     float dx = porcupineTransform->x - balloonTransform->x;

@@ -33,6 +33,7 @@ enum SoundID {
     SOUND_CLOUD_BOUNCE,
     SOUND_CHOMP,
     SOUND_VICTORY,
+    SOUND_QUILL,
     SOUND_MAX
 };
 
@@ -139,6 +140,8 @@ static const SoundResource GAME_SOUNDS[] = {
     {"assets/sounds/Cartoon Boing Sound Effect.mp3", SOUND_CLOUD_BOUNCE}, // https://www.youtube.com/watch?v=F7oMDw2zKog&list=PLM3YufdBArxhztFAvw_d26CsAEJqAK_TB
     {"assets/sounds/chomp.wav", SOUND_CHOMP}, // https://freesound.org/people/maugusto_sfx/sounds/521253/
     {"assets/sounds/victory.wav", SOUND_VICTORY}, // https://freesound.org/people/maugusto_sfx/sounds/521253/
+    {"assets/sounds/SFX_Arrow_Passby.wav", SOUND_QUILL}, // https://freesound.org/people/maugusto_sfx/sounds/521253/
+   
     // Add new sounds here
 };
 
