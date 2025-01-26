@@ -51,7 +51,7 @@ public:
     EntityID arrowEntity;  // To track the arrow sprite
     GameState gameState;
     bool g_Porcupine_is_hit = 0;
-    int g_Porcuopine_hit_anim_timer = 0.0f;
+    float g_Porcuopine_hit_anim_timer = 0.0f;
 
     void AddScore(BalloonType balloonType);
 

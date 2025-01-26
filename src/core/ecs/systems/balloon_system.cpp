@@ -106,6 +106,7 @@ void BalloonSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
             if (!porcupineTransform || !porcupineCollider || !porcupinePhysics) continue;
             
             float penetrationX, penetrationY;
+            // projectile collision
             if (BalloonCheckCollision(projectileTransform, projectileCollider,
                                     porcupineTransform, porcupineCollider,
                                     penetrationX, penetrationY)) 
@@ -337,6 +338,7 @@ void BalloonSystem::HandleBalloonCollision(EntityID balloonEntity,
                                          PhysicsComponent* porcupinePhysics,
                                          EntityManager* entities) 
 {
+    g_Game.g_Porcupine_is_hit = true;
 
 
     // Calculate direction from balloon to porcupine
