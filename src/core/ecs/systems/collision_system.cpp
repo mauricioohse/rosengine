@@ -1,4 +1,5 @@
 #include "collision_system.h"
+#include "../../utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -12,35 +13,8 @@ bool CollisionSystem::CheckCollision(
     TransformComponent* transformB, ColliderComponent* colliderB,
     float& penetrationX, float& penetrationY) 
 {
-    // Calculate boundaries for first box
-    float leftA = transformA->x;
-    float rightA = transformA->x + colliderA->width;
-    float topA = transformA->y;
-    float bottomA = transformA->y + colliderA->height;
-    
-    // Calculate boundaries for second box
-    float leftB = transformB->x;
-    float rightB = transformB->x + colliderB->width;
-    float topB = transformB->y;
-    float bottomB = transformB->y + colliderB->height;
-    
-    // Check if boxes overlap
-    if (leftA < rightB && rightA > leftB &&
-        topA < bottomB && bottomA > topB) {
-        
-        // Calculate penetration depths
-        penetrationX = (rightA > rightB) ? 
-            rightB - leftA : 
-            rightA - leftB;
-            
-        penetrationY = (bottomA > bottomB) ? 
-            bottomB - topA : 
-            bottomA - topB;
-            
-        return true;
-    }
-    
-    return false;
+    return CheckCollisionCentered(transformA, colliderA, transformB, colliderB, 
+                                penetrationX, penetrationY);
 }
 
 void CollisionSystem::ResolveCollision(
@@ -52,11 +26,11 @@ void CollisionSystem::ResolveCollision(
         return;
     }
 
-    // Calculate centers of both objects
-    float centerAx = transformA->x + colliderA->width * 0.5f;
-    float centerAy = transformA->y + colliderA->height * 0.5f;
-    float centerBx = transformB->x + colliderB->width * 0.5f;
-    float centerBy = transformB->y + colliderB->height * 0.5f;
+    // Calculate centers (already at center, so just use transform positions)
+    float centerAx = transformA->x;
+    float centerAy = transformA->y;
+    float centerBx = transformB->x;
+    float centerBy = transformB->y;
 
     // Determine direction of collision
     float directionX = centerAx - centerBx;  // Positive if A is to the right of B

@@ -2,6 +2,7 @@
 #include "../components.h"
 #include "../component_macros.h"
 #include "../../../game/game.h"
+#include "../../utils.h"
 #include <math.h>
 
 void BalloonSystem::Init() {
@@ -13,35 +14,8 @@ bool BalloonCheckCollision(
     TransformComponent* transformB, ColliderComponent* colliderB,
     float& penetrationX, float& penetrationY) 
 {
-    // Calculate boundaries for first box
-    float leftA = transformA->x;
-    float rightA = transformA->x + colliderA->width;
-    float topA = transformA->y;
-    float bottomA = transformA->y + colliderA->height;
-    
-    // Calculate boundaries for second box
-    float leftB = transformB->x;
-    float rightB = transformB->x + colliderB->width;
-    float topB = transformB->y;
-    float bottomB = transformB->y + colliderB->height;
-    
-    // Check if boxes overlap
-    if (leftA < rightB && rightA > leftB &&
-        topA < bottomB && bottomA > topB) {
-        
-        // Calculate penetration depths
-        penetrationX = (rightA > rightB) ? 
-            rightB - leftA : 
-            rightA - leftB;
-            
-        penetrationY = (bottomA > bottomB) ? 
-            bottomB - topA : 
-            bottomA - topB;
-            
-        return true;
-    }
-    
-    return false;
+    return CheckCollisionCentered(transformA, colliderA, transformB, colliderB, 
+                                penetrationX, penetrationY);
 }
 
 void BalloonSystem::Update(float deltaTime, EntityManager* entities, ComponentArrays* components) {
@@ -299,7 +273,7 @@ void BalloonSystem::HandleBalloonCollision(EntityID balloonEntity,
     ExplodeBalloon(balloonEntity, entities);
 }
 
-void BalloonSystem::ExplodeBalloon(EntityID balloonEntity, EntityManager* entities) {
+void ExplodeBalloon(EntityID balloonEntity, EntityManager* entities) {
     // For now, just destroy the entity
     // Later we can add particle effects, sound, etc.
     entities->DestroyEntity(balloonEntity);

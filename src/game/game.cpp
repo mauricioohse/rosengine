@@ -8,6 +8,8 @@
 
 Game g_Game;
 
+#define DEBUG_COLLISION 1
+
 bool Game::Init() {
     // Initialize systems
     // renderSystem.Init();
@@ -178,6 +180,42 @@ void Game::Render() {
         y2 -= (int)camera->y;
         
         SDL_RenderDrawLine(g_Engine.window->renderer, x1, y1, x2, y2);
+    }
+
+    // Draw collision boundaries
+    SDL_SetRenderDrawColor(g_Engine.window->renderer, 255, 0, 0, 128);  // Semi-transparent red
+    
+    // Loop through all entities with colliders
+    if (DEBUG_COLLISION) // can be disabled by changing here
+    for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
+        if (g_Engine.entityManager.HasComponent(entity, COMPONENT_COLLIDER | COMPONENT_TRANSFORM)) {
+            TransformComponent* transform = 
+                (TransformComponent*)g_Engine.componentArrays.GetComponentData(entity, COMPONENT_TRANSFORM);
+            ColliderComponent* collider = 
+                (ColliderComponent*)g_Engine.componentArrays.GetComponentData(entity, COMPONENT_COLLIDER);
+                
+            if (transform && collider) {
+                // Calculate screen position (adjust for camera)
+                SDL_Rect rect;
+                rect.x = (int)(transform->x - camera->x - collider->width/2);  // Center horizontally
+                rect.y = (int)(transform->y - camera->y - collider->height/2); // Center vertically
+                rect.w = (int)collider->width;
+                rect.h = (int)collider->height;
+                
+                // Draw rectangle outline
+                SDL_RenderDrawRect(g_Engine.window->renderer, &rect);
+                
+                // For triggers, draw an X
+                if (collider->isTrigger) {
+                    SDL_RenderDrawLine(g_Engine.window->renderer, 
+                        rect.x, rect.y, 
+                        rect.x + rect.w, rect.y + rect.h);
+                    SDL_RenderDrawLine(g_Engine.window->renderer, 
+                        rect.x + rect.w, rect.y, 
+                        rect.x, rect.y + rect.h);
+                }
+            }
+        }
     }
 
     // Draw damage percentage

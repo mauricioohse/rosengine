@@ -2,6 +2,7 @@
 #include <math.h>
 #include "../../input.h"
 #include "../component_macros.h"
+#include "balloon_system.h"
 
 void ShooterSystem::Init() {
     printf("ShooterSystem initialized\n");
@@ -88,16 +89,23 @@ void ShooterSystem::SpawnQuill(EntityManager* entities, ComponentArrays* compone
     float angle = (atan2f(dirY, dirX) * 180.0f / 3.1415) + 90.0f;
     transform->Init(x, y, angle);
 
-    printf("quill rotation angle: %f \n", angle);
+    // Get owner's physics component to add its velocity to the quill
+    PhysicsComponent* ownerPhysics = 
+        (PhysicsComponent*)components->GetComponentData(owner, COMPONENT_PHYSICS);
     
     // Initialize physics
     PhysicsComponent* physics = 
         (PhysicsComponent*)components->GetComponentData(quill, COMPONENT_PHYSICS);
     physics->Init(0.1f, 0.0f);  // Light mass, no friction
-    physics->velocityX = dirX * speed;
-    physics->velocityY = dirY * speed;
     
-
+    // Add owner's velocity to quill's initial velocity
+    if (ownerPhysics) {
+        physics->velocityX = (dirX * speed) + ownerPhysics->velocityX;
+        physics->velocityY = (dirY * speed) + ownerPhysics->velocityY;
+    } else {
+        physics->velocityX = dirX * speed;
+        physics->velocityY = dirY * speed;
+    }
     
     // Initialize quill properties
     QuillComponent* quillComp = 
@@ -123,6 +131,50 @@ void ShooterSystem::UpdateQuills(float deltaTime, EntityManager* entities, Compo
             if (quill->currentTime >= quill->lifetime) {
                 entities->DestroyEntity(entity);
                 continue;
+            }
+
+            // Check for collision with balloons
+            TransformComponent* quillTransform = 
+                (TransformComponent*)components->GetComponentData(entity, COMPONENT_TRANSFORM);
+            ColliderComponent* quillCollider = 
+                (ColliderComponent*)components->GetComponentData(entity, COMPONENT_COLLIDER);
+
+            if (!quillTransform || !quillCollider) continue;
+
+            // Check against all balloons
+            for (EntityID balloonEntity = 1; balloonEntity < MAX_ENTITIES; balloonEntity++) {
+                if (entities->HasComponent(balloonEntity, COMPONENT_BALLOON)) {
+                    TransformComponent* balloonTransform = 
+                        (TransformComponent*)components->GetComponentData(balloonEntity, COMPONENT_TRANSFORM);
+                    ColliderComponent* balloonCollider = 
+                        (ColliderComponent*)components->GetComponentData(balloonEntity, COMPONENT_COLLIDER);
+                    PhysicsComponent* balloonPhysics = 
+                        (PhysicsComponent*)components->GetComponentData(balloonEntity, COMPONENT_PHYSICS);
+
+                    if (!balloonTransform || !balloonCollider || !balloonPhysics) continue;
+
+                    float penetrationX, penetrationY;
+                    if (BalloonCheckCollision(quillTransform, quillCollider,
+                                            balloonTransform, balloonCollider,
+                                            penetrationX, penetrationY)) 
+                    {
+                        // Apply a small knockback to balloon before destroying (visual effect)
+                        PhysicsComponent* quillPhysics = 
+                            (PhysicsComponent*)components->GetComponentData(entity, COMPONENT_PHYSICS);
+                        if (quillPhysics) {
+                            const float KNOCKBACK_FORCE = 500.0f;
+                            balloonPhysics->velocityX += (quillPhysics->velocityX / 
+                                quillPhysics->mass) * KNOCKBACK_FORCE;
+                            balloonPhysics->velocityY += (quillPhysics->velocityY / 
+                                quillPhysics->mass) * KNOCKBACK_FORCE;
+                        }
+
+                        // Destroy both the balloon and the quill
+                        ExplodeBalloon(balloonEntity, entities);
+                        entities->DestroyEntity(entity);
+                        break; // Exit balloon loop since quill is destroyed
+                    }
+                }
             }
         }
     }

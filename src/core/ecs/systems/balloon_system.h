@@ -3,12 +3,16 @@
 #include "../entity.h"
 #include "../components.h"
 
+bool BalloonCheckCollision(TransformComponent *transformA, ColliderComponent *colliderA, TransformComponent *transformB, ColliderComponent *colliderB, float &penetrationX, float &penetrationY);
+void ExplodeBalloon(EntityID balloonEntity, EntityManager* entities);
+
+
 class BalloonSystem : public System {
 public:
     static constexpr float KNOCKBACK_FORCE = 300.0f;  // Force applied to porcupine on collision
 
     void Init() override;
-    void Update(float deltaTime, EntityManager* entities, ComponentArrays* components) override;
+    void Update(float deltaTime, EntityManager *entities, ComponentArrays *components) override;
     void Destroy() override;
 
 private:
@@ -28,5 +32,4 @@ private:
                                 PhysicsComponent *porcupinePhysics,
                                 EntityManager *entities);
 
-    void ExplodeBalloon(EntityID balloonEntity, EntityManager* entities);
 }; 
