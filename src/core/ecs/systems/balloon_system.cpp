@@ -66,6 +66,10 @@ void BalloonSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                     UpdateGreenBalloon(deltaTime, balloon, balloonTransform, physics, entities, components);
                     break;
                     
+                case BALLOON_BLUE:
+                    UpdateBlueBalloon(deltaTime, balloon, balloonTransform, physics, porcupineTransform, entities, components);
+                    break;
+                    
                 default:
                     break;
             }
@@ -185,6 +189,47 @@ void BalloonSystem::UpdateGreenBalloon(float deltaTime,
     }
 }
 
+void BalloonSystem::UpdateBlueBalloon(float deltaTime, 
+                                    BalloonComponent* balloon,
+                                    TransformComponent* transform,
+                                    PhysicsComponent* physics,
+                                    TransformComponent* targetTransform,
+                                    EntityManager* entities,
+                                    ComponentArrays* components) 
+{
+    // Update shoot timer
+    balloon->shootTimer += deltaTime;
+    
+    // Calculate distance to target
+    float dx = targetTransform->x - transform->x;
+    float dy = targetTransform->y - transform->y;
+    float distance = sqrt(dx*dx + dy*dy);
+    
+    // Elastic tether behavior
+    const float IDEAL_DISTANCE = 250.0f;  // The distance the balloon tries to maintain
+    const float ELASTIC_FORCE = 2.0f;     // How strongly it maintains its distance
+    
+    if (distance > 0) {
+        dx /= distance;
+        dy /= distance;
+        
+        // Calculate force based on distance from ideal position
+        float distanceForce = (distance - IDEAL_DISTANCE) * ELASTIC_FORCE;
+        
+        // Apply stronger force when too close or too far
+        physics->velocityX = dx * distanceForce * balloon->moveSpeed * deltaTime;
+        physics->velocityY = dy * distanceForce * balloon->moveSpeed * deltaTime;
+    }
+    
+    // Shoot aimed projectile every 2 seconds
+    if (balloon->shootTimer >= 2.0f) {
+        balloon->shootTimer = 0.0f;
+        ShootAimedShot(transform->x, transform->y, 
+                      targetTransform->x, targetTransform->y,
+                      entities, components);
+    }
+}
+
 void BalloonSystem::ShootLasers(float x, float y, 
                                EntityManager* entities, 
                                ComponentArrays* components) 
@@ -234,6 +279,45 @@ void BalloonSystem::ShootLasers(float x, float y,
             physics->velocityX = dx * LASER_SPEED;
             physics->velocityY = dy * LASER_SPEED;
         }
+    }
+}
+
+void BalloonSystem::ShootAimedShot(float startX, float startY, 
+                                  float targetX, float targetY,
+                                  EntityManager* entities, 
+                                  ComponentArrays* components) 
+{
+    // Calculate direction to target
+    float dx = targetX - startX;
+    float dy = targetY - startY;
+    
+    // Normalize direction
+    float distance = sqrt(dx*dx + dy*dy);
+    if (distance > 0) {
+        dx /= distance;
+        dy /= distance;
+    }
+    
+    // Create laser entity
+    EntityID laser = entities->CreateEntity();
+    
+    const float BLUE_LASER_SPEED = 300.0f;    // Faster than green laser
+    const float BLUE_LASER_DAMAGE = 7.0f;     // More damage than green laser
+    const float BLUE_LASER_LIFETIME = 3.0f;   // Shorter lifetime for balance
+    
+    // Add components
+    ADD_TRANSFORM(laser, startX, startY, 0.0f, 1.0f);
+    ADD_SPRITE(laser, ResourceManager::GetTexture(TEXTURE_BOX_ANIM_SHEET));
+    ADD_PHYSICS(laser, 1.0f, 0.0f);  // Light mass, no friction
+    ADD_COLLIDER(laser, 16, 16, 0, 1);
+    ADD_PROJECTILE(laser, BLUE_LASER_DAMAGE, BLUE_LASER_LIFETIME, dx, dy, 0);
+    
+    // Initialize physics for movement
+    PhysicsComponent* physics = 
+        (PhysicsComponent*)components->GetComponentData(laser, COMPONENT_PHYSICS);
+    if (physics) {
+        physics->velocityX = dx * BLUE_LASER_SPEED;
+        physics->velocityY = dy * BLUE_LASER_SPEED;
     }
 }
 

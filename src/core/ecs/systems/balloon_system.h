@@ -24,7 +24,11 @@ private:
 
     void UpdateGreenBalloon(float deltaTime, BalloonComponent *balloon, TransformComponent *transform, PhysicsComponent *physics, EntityManager *entities, ComponentArrays *components);
 
+    void UpdateBlueBalloon(float deltaTime, BalloonComponent *balloon, TransformComponent *transform, PhysicsComponent *physics, TransformComponent *targetTransform, EntityManager *entities, ComponentArrays *components);
+
     void ShootLasers(float x, float y, EntityManager *entities, ComponentArrays *components);
+
+    void ShootAimedShot(float startX, float startY, float targetX, float targetY, EntityManager *entities, ComponentArrays *components);
 
     void HandleBalloonCollision(EntityID balloonEntity,
                                 TransformComponent *balloonTransform,

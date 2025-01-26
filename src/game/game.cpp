@@ -76,6 +76,14 @@ bool Game::Init() {
     ADD_BALLOON(greenBalloon, BALLOON_GREEN, squirrelEntity, 50, 100);
     ADD_PHYSICS(greenBalloon, 10, 15);
 
+    // Add after the red balloon creation
+    EntityID blueBalloon = g_Engine.entityManager.CreateEntity();
+    ADD_TRANSFORM(blueBalloon, 400, -400, 0, 1);
+    ADD_SPRITE(blueBalloon, ResourceManager::GetTexture(TEXTURE_SUPER_PEANUT));
+    ADD_COLLIDER(blueBalloon, 64, 64, 0, 1);
+    ADD_BALLOON(blueBalloon, BALLOON_BLUE, squirrelEntity, 50, 100);
+    ADD_PHYSICS(blueBalloon, 10, 15);
+
     // Store IDs for later use
     hitSoundID = SOUND_HIT;
     fpsFontID = FONT_FPS;
