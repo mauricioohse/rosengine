@@ -83,12 +83,6 @@ bool Game::Init() {
     bestTime = 0.0f;
     isNewRecord = false;
 
-    // Create arrow entity
-    arrowEntity = g_Engine.entityManager.CreateEntity();
-    Texture* arrowTexture = ResourceManager::GetTexture(TEXTURE_ARROW);
-    ADD_TRANSFORM(arrowEntity, 0.0f, 0.0f, 0.0f, 1.0f);
-    ADD_SPRITE(arrowEntity, arrowTexture);
-
     // Initialize scoring system
     currentScore = 0;
     bestScore = 0;
@@ -320,17 +314,21 @@ void Game::Render() {
         }
     }
 
-    // Draw score and combo
+    // Draw score, combo and wave number
     Font* font = ResourceManager::GetFont(fpsFontID);
     if (font) {
         SDL_Color textColor = {255, 255, 255, 255};
         
-        // Create score text
-        char scoreText[64];
+        // Create score and wave text
+        char scoreText[128];
         if (comboMultiplier > 1.0f) {
-            snprintf(scoreText, sizeof(scoreText), "Score: %d (%.1fx)", currentScore, comboMultiplier);
+            snprintf(scoreText, sizeof(scoreText), "Score: %d (%.1fx) - Wave %d-%d", 
+                    currentScore, comboMultiplier, 
+                    waveSystem.currentCycle + 1, waveSystem.currentWave + 1);
         } else {
-            snprintf(scoreText, sizeof(scoreText), "Score: %d", currentScore);
+            snprintf(scoreText, sizeof(scoreText), "Score: %d - Wave %d-%d", 
+                    currentScore, 
+                    waveSystem.currentCycle + 1, waveSystem.currentWave + 1);
         }
         
         // Create text surface

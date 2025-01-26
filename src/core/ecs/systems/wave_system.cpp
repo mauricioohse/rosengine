@@ -90,7 +90,7 @@ void WaveSystem::SpawnBalloon(BalloonType type, EntityManager* entities, Compone
     // Add components based on balloon type
     ADD_TRANSFORM(balloon, spawnX, spawnY, 0, 1);
     ADD_PHYSICS(balloon, 10, 15);
-    ADD_COLLIDER(balloon, 64, 64, 0, 1);
+    ADD_COLLIDER(balloon, 32, 32, 0, 1);
     ADD_BALLOON(balloon, type, g_Game.squirrelEntity, 50, 100);
     
     // Set sprite based on type

@@ -84,6 +84,8 @@ enum TextureID {
     TEXTURE_BALLOON_RED,
     TEXTURE_BALLOON_GREEN,
     TEXTURE_BALLOON_BLUE,
+    TEXTURE_LASER_GREEN,
+    TEXTURE_LASER_BLUE,
     TEXTURE_MAX
 };
 
@@ -120,6 +122,8 @@ static const TextureResource GAME_TEXTURES[] = {
     {"assets/sprites/balloons/red_balloon.png",TEXTURE_BALLOON_RED},
     {"assets/sprites/balloons/green_balloon.png",TEXTURE_BALLOON_GREEN},
     {"assets/sprites/balloons/blue_balloon.png",TEXTURE_BALLOON_BLUE},
+    {"assets/sprites/balloons/green_laser.png",TEXTURE_LASER_GREEN},
+    {"assets/sprites/balloons/blue_laser.png",TEXTURE_LASER_BLUE},
     // Add new textures here
 };
 

@@ -16,8 +16,6 @@ struct WaveData {
 class WaveSystem : public System {
 private:
     static const int WAVES_PER_CYCLE = 5;
-    int currentWave = 0;
-    int currentCycle = 0;  // Increases every 5 waves
     float spawnTimer = 0.0f;
     
     // Base wave definitions
@@ -29,6 +27,8 @@ private:
     void SpawnBalloon(BalloonType type, EntityManager* entities, ComponentArrays* components);
 
 public:
+    int currentWave = 0;
+    int currentCycle = 0;  // Increases every 5 waves
     void Init() override;
     void Update(float deltaTime, EntityManager* entities, ComponentArrays* components) override;
     void Destroy() override;
