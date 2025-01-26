@@ -14,6 +14,7 @@
 #include "../core/ecs/systems/ice_physics_system.h"
 #include "../core/ecs/systems/shooter_system.h"
 #include "../core/ecs/systems/balloon_system.h"
+#include "../core/ecs/systems/wave_system.h"
 #include "../core/ecs/component_macros.h"
 
 enum GameState {
