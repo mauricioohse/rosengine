@@ -120,7 +120,7 @@ void BalloonSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                 }
 
                 // Increase damage percentage
-                porcupinePhysics->damagePercent += projectile->damage;
+                porcupinePhysics->damagePercent += projectile->damage*g_Game.waveSystem.damageMultiplier;
                 
                 // Calculate knockback multiplier
                 porcupinePhysics->knockbackMultiplier = 1.0f + (porcupinePhysics->damagePercent / 100.0f);

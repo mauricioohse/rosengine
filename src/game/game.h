@@ -35,6 +35,7 @@ public:
     bool Init();
     void HandleInput();
     void Update(float deltaTime);
+    void RenderUpgradeUI();
     void Render();
     void Cleanup();
     void Reset();
@@ -55,7 +56,7 @@ public:
 
     void AddScore(BalloonType balloonType);
 
-private:
+
     // Systems
     RenderSystem renderSystem;
     WASDControllerSystem wasdSystem;
@@ -68,7 +69,11 @@ private:
     PeanutSystem peanutSystem;
     MusicSystem musicSystem;
     WaveSystem waveSystem;
-    
+    ShooterSystem shooterSystem;
+    IcePhysicsSystem icePhysicsSystem;
+
+private:
+
     // Entities
     EntityID backgroundEntity;
     EntityID bottomBackgroundEntity;
@@ -94,6 +99,8 @@ private:
     static const int SCORE_RED_BALLOON;
     static const int SCORE_GREEN_BALLOON;
     static const int SCORE_BLUE_BALLOON;
+
+    void PrintUpgradeStats();
 };
 
 extern Game g_Game;  // Global game instance 

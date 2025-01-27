@@ -7,6 +7,9 @@
 
 void ShooterSystem::Init() {
     printf("ShooterSystem initialized\n");
+    damageMultiplier = 1.0f;
+    extraProjectiles = 0;
+    fireRateMultiplier = 1.0f;
 }
 
 void ShooterSystem::Update(float deltaTime, EntityManager* entities, ComponentArrays* components) {
@@ -31,10 +34,10 @@ void ShooterSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                 continue;
             }
 
-            // Handle shooting
+            // Handle shooting with fire rate multiplier
             if (Input::mouseButtonsPressed[0]) {  // Left click
                 float currentTime = SDL_GetTicks() / 1000.0f;
-                if (currentTime - shooter->lastShotTime >= shooter->fireRate) {
+                if (currentTime - shooter->lastShotTime >= shooter->fireRate * fireRateMultiplier) {
                     // Calculate direction from screen center to mouse
                     float dirX = mouseX - screenCenterX;
                     float dirY = mouseY - screenCenterY;
@@ -45,12 +48,19 @@ void ShooterSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                         dirX /= length;
                         dirY /= length;
                         
-                        // Spawn quill from the actual entity position
+                        // Spawn main quill
                         SpawnQuill(entities, components, transform->x, transform->y, 
                                  dirX, dirY, shooter->quillSpeed, entity);
 
+                        // Apply recoil for main shot
                         physics->velocityX -= dirX * shooter->recoilForce;
                         physics->velocityY -= dirY * shooter->recoilForce;
+
+                        // Apply additional half recoil for each extra projectile
+                        for(int i = 0; i < extraProjectiles; i++) {
+                            physics->velocityX -= dirX * shooter->recoilForce/2;
+                            physics->velocityY -= dirY * shooter->recoilForce/2;
+                        }
 
                         printf("shooter entity %d mouse (%d, %d) screen center (%d, %d) force (%f,%f) \n", 
                         entity, mouseX, mouseY, screenCenterX, screenCenterY,
@@ -119,15 +129,68 @@ void ShooterSystem::SpawnQuill(EntityManager* entities, ComponentArrays* compone
         physics->velocityY = dirY * speed;
     }
     
-    // Initialize quill properties
+    // Initialize quill properties with damage multiplier
     QuillComponent* quillComp = 
         (QuillComponent*)components->GetComponentData(quill, COMPONENT_QUILL);
-    quillComp->Init(10.0f, 2.0f, owner);
+    quillComp->Init(10.0f * damageMultiplier, 2.0f, owner);  // Apply damage multiplier
     
     // Initialize collider
     ColliderComponent* collider = 
         (ColliderComponent*)components->GetComponentData(quill, COMPONENT_COLLIDER);
     collider->Init(8, 8, false, true);  // Small trigger collider
+
+    // Spawn extra projectiles if we have any
+    for(int i = 0; i < extraProjectiles; i++) {
+        printf("Spawning extra projectile %d/%d\n", i + 1, extraProjectiles);
+        // Calculate spread angle (15 degrees per extra projectile)
+        float spreadAngle = (i + 1) * 15.0f * (3.14159f / 180.0f);
+        float spreadDirX = dirX * cosf(spreadAngle) - dirY * sinf(spreadAngle);
+        float spreadDirY = dirX * sinf(spreadAngle) + dirY * cosf(spreadAngle);
+        
+        // Spawn additional quill with spread
+        EntityID extraQuill = entities->CreateEntity();
+        
+        // Add components
+        entities->AddComponentToEntity(extraQuill, COMPONENT_TRANSFORM);
+        entities->AddComponentToEntity(extraQuill, COMPONENT_QUILL);
+        entities->AddComponentToEntity(extraQuill, COMPONENT_PHYSICS);
+        entities->AddComponentToEntity(extraQuill, COMPONENT_COLLIDER);
+        
+        // Initialize sprite with peanut texture
+        Texture *quillTexture = ResourceManager::GetTexture(TEXTURE_PEANUT);
+        ADD_SPRITE(extraQuill, quillTexture);
+
+        // Initialize transform
+        TransformComponent* transform = 
+            (TransformComponent*)components->GetComponentData(extraQuill, COMPONENT_TRANSFORM);
+        // Convert to degrees and add 90 to align sprite
+        float angle = (atan2f(spreadDirY, spreadDirX) * 180.0f / 3.1415) + 90.0f;
+        transform->Init(x, y, angle);
+
+        // Initialize physics
+        PhysicsComponent* physics = 
+            (PhysicsComponent*)components->GetComponentData(extraQuill, COMPONENT_PHYSICS);
+        physics->Init(0.1f, 0.0f);  // Light mass, no friction
+        
+        // Add owner's velocity to quill's initial velocity
+        if (0) { //ownerPhysics) {
+            physics->velocityX = (spreadDirX * speed) + ownerPhysics->velocityX;
+            physics->velocityY = (spreadDirY * speed) + ownerPhysics->velocityY;
+        } else {
+            physics->velocityX = spreadDirX * speed;
+            physics->velocityY = spreadDirY * speed;
+        }
+        
+        // Initialize quill properties with damage multiplier
+        QuillComponent* quillComp = 
+            (QuillComponent*)components->GetComponentData(extraQuill, COMPONENT_QUILL);
+        quillComp->Init(10.0f * damageMultiplier, 2.0f, owner);
+        
+        // Initialize collider
+        ColliderComponent* collider = 
+            (ColliderComponent*)components->GetComponentData(extraQuill, COMPONENT_COLLIDER);
+        collider->Init(8, 8, false, true);  // Small trigger collider
+    }
 }
 
 void ShooterSystem::UpdateQuills(float deltaTime, EntityManager* entities, ComponentArrays* components) {
@@ -204,4 +267,20 @@ void ShooterSystem::UpdateQuills(float deltaTime, EntityManager* entities, Compo
 
 void ShooterSystem::Destroy() {
     printf("ShooterSystem destroyed\n");
+}
+
+void ShooterSystem::ApplyUpgrade(UpgradeType type, float value) {
+    switch (type) {
+        case UPGRADE_FIRE_RATE:
+            fireRateMultiplier *= value;  // Reduce fire rate (value < 1.0)
+            break;
+            
+        case UPGRADE_MULTI_SHOT:
+            extraProjectiles += (int)value;  // Add extra projectiles
+            break;
+                        
+        case UPGRADE_RECOIL_RES:
+            // This will be handled by IcePhysicsSystem
+            break;
+    }
 } 

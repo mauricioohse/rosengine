@@ -3,6 +3,8 @@
 
 void IcePhysicsSystem::Init() {
     printf("IcePhysicsSystem initialized\n");
+    gripMultiplier = 1.0f;
+    knockbackResistance = 1.0f;
 }
 
 void IcePhysicsSystem::Update(float deltaTime, EntityManager* entities, ComponentArrays* components) {
@@ -27,8 +29,8 @@ void IcePhysicsSystem::Update(float deltaTime, EntityManager* entities, Componen
 }
 
 void IcePhysicsSystem::ApplyFriction(PhysicsComponent* physics, float deltaTime) {
-    // Gradually reduce velocity based on friction
-    float frictionForce = physics->friction * deltaTime;
+    // Apply grip multiplier to friction
+    float frictionForce = physics->friction * deltaTime * gripMultiplier;
     
     // Calculate velocity magnitude
     float velocityMagnitude = sqrtf(
@@ -65,9 +67,21 @@ void IcePhysicsSystem::LimitSpeed(PhysicsComponent* physics) {
 }
 
 void IcePhysicsSystem::ApplyRecoilForce(PhysicsComponent* physics, float forceX, float forceY) {
-    // Apply force in opposite direction of shooting
-    physics->velocityX -= forceX / physics->mass;
-    physics->velocityY -= forceY / physics->mass;
+    // Apply knockback resistance to recoil
+    physics->velocityX -= (forceX / physics->mass) * knockbackResistance;
+    physics->velocityY -= (forceY / physics->mass) * knockbackResistance;
+}
+
+void IcePhysicsSystem::ApplyUpgrade(UpgradeType type, float value) {
+    switch (type) {
+        case UPGRADE_GRIP:
+            gripMultiplier *= value;  // Improve ice grip
+            break;
+            
+        case UPGRADE_RECOIL_RES:
+            knockbackResistance *= value;  // Reduce recoil
+            break;
+    }
 }
 
 void IcePhysicsSystem::Destroy() {

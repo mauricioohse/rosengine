@@ -110,7 +110,7 @@ static const TextureResource GAME_TEXTURES[] = {
     {"assets/sprites/helicopter.png", TEXTURE_HELICOPTER},
     {"assets/background/background_middle.png", TEXTURE_BACKGROUND_MIDDLE},
     {"assets/background/background_bottom.png", TEXTURE_BACKGROUND_BOTTOM},
-    {"assets/sprites/peanuts/peanut_boost.png", TEXTURE_PEANUT},
+    {"assets/sprites/squirrel/quirrel.png", TEXTURE_PEANUT},
     {"assets/sprites/peanuts/peanut_shield.png", TEXTURE_SHIELD_PEANUT},
     {"assets/sprites/peanuts/peanut_super.png", TEXTURE_SUPER_PEANUT},
     {"assets/sprites/clouds/cloud_white_small.png", TEXTURE_WHITE_CLOUDE_SMALL},

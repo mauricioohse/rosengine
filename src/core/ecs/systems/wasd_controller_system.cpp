@@ -4,6 +4,7 @@
 
 void WASDControllerSystem::Init() {
     printf("WASDControllerSystem initialized\n");
+    speedMultiplier = 1.0f;
 }
 
 void WASDControllerSystem::Update(float deltaTime, EntityManager* entities, ComponentArrays* components) {
@@ -22,42 +23,22 @@ void WASDControllerSystem::Update(float deltaTime, EntityManager* entities, Comp
                 continue;
             }
 
-            // Calculate movement based on input
-            float moveX = 0.0f;
-            float moveY = 0.0f;
-
-            // Get keyboard state
-            const Uint8* keyState = SDL_GetKeyboardState(NULL);
-
-            // WASD movement
-            if (keyState[SDL_SCANCODE_W]) {
-                moveY -= 1.0f;
-            }
-            if (keyState[SDL_SCANCODE_S]) {
-                moveY += 1.0f;
-            }
-            if (keyState[SDL_SCANCODE_A]) {
-                moveX -= 1.0f;
-            }
-            if (keyState[SDL_SCANCODE_D]) {
-                moveX += 1.0f;
-            }
-
-            // Normalize diagonal movement
-            if (moveX != 0.0f && moveY != 0.0f) {
-                float length = sqrt(moveX * moveX + moveY * moveY);
-                moveX /= length;
-                moveY /= length;
-            }
-
-            controller->moveX = moveX;
-            controller->moveY = moveY;
-
-            // Apply acceleration to physics velocity
-            const float ACCELERATION = controller->moveSpeed * 1.0f;  // Adjust this multiplier as needed
-            physics->velocityX += moveX * ACCELERATION * deltaTime;
-            physics->velocityY += moveY * ACCELERATION * deltaTime;
+            // Apply input forces with speed multiplier
+            float moveForce = controller->moveSpeed * speedMultiplier;
+            
+            if (Input::IsKeyDown(SDL_SCANCODE_W)) physics->velocityY -= moveForce * deltaTime;
+            if (Input::IsKeyDown(SDL_SCANCODE_S)) physics->velocityY += moveForce * deltaTime;
+            if (Input::IsKeyDown(SDL_SCANCODE_A)) physics->velocityX -= moveForce * deltaTime;
+            if (Input::IsKeyDown(SDL_SCANCODE_D)) physics->velocityX += moveForce * deltaTime;
         }
+    }
+}
+
+void WASDControllerSystem::ApplyUpgrade(UpgradeType type, float value) {
+    switch (type) {
+        case UPGRADE_SPEED:
+            speedMultiplier *= value;  // Increase movement speed
+            break;
     }
 }
 

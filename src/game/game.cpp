@@ -40,8 +40,8 @@ bool Game::Init() {
     g_Engine.systemManager.RegisterSystem(&collisionSystem);
     g_Engine.systemManager.RegisterSystem(&musicSystem);
     g_Engine.systemManager.RegisterSystem(new WASDControllerSystem());
-    g_Engine.systemManager.RegisterSystem(new IcePhysicsSystem());
-    g_Engine.systemManager.RegisterSystem(new ShooterSystem());
+    g_Engine.systemManager.RegisterSystem(&icePhysicsSystem);
+    g_Engine.systemManager.RegisterSystem(&shooterSystem);
     g_Engine.systemManager.RegisterSystem(new BalloonSystem());
     g_Engine.systemManager.RegisterSystem(&waveSystem);
 
@@ -59,7 +59,7 @@ bool Game::Init() {
     Texture* squirrelTexture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_LEFT);    
     // Add basic components
     ADD_TRANSFORM(squirrelEntity, 1200.0f, 100.0f, 0.0f, 1.0f);  // Center-top of screen
-    ADD_PHYSICS(squirrelEntity, 100, 2);
+    ADD_PHYSICS(squirrelEntity, 50, 2);
     ADD_SPRITE(squirrelEntity, squirrelTexture);
     ADD_WASD_CONTROLLER(squirrelEntity, 400, 1);
     ADD_COLLIDER(squirrelEntity, 32, 32, 0, 0);
@@ -108,14 +108,12 @@ void Game::HandleInput(){
         }
     }
 
-    // // Play sound on mouse click
-    // if (Input::mouseButtonsPressed[0]) {  // Left click
-    //     Sound* hitSound = ResourceManager::GetSound(SOUND_HIT);
-    //     if (hitSound) {
-    //         Mix_PlayChannel(-1, hitSound->sdlChunk, 0);
-    //     }
-    // }
-    
+    // Debug: Force upgrade selection with ESC
+    if (Input::IsKeyPressed(SDL_SCANCODE_ESCAPE) && gameState == GAME_STATE_PLAYING) {
+        waveSystem.GenerateUpgradeChoices();
+        waveSystem.SetAwaitingUpgradeChoice(true);
+    }
+
     // Add reset on 'R' key press
     if (Input::IsKeyPressed(SDL_SCANCODE_R)) {
         Reset();
@@ -123,6 +121,21 @@ void Game::HandleInput(){
 }
 
 void Game::Update(float deltaTime) {
+    if (waveSystem.IsAwaitingUpgradeChoice()) {
+        // Handle upgrade selection input
+        if (Input::IsKeyPressed(SDL_SCANCODE_1)) {
+            waveSystem.SelectUpgrade(0);
+            PrintUpgradeStats();  // Add debug output after selection
+        } else if (Input::IsKeyPressed(SDL_SCANCODE_2)) {
+            waveSystem.SelectUpgrade(1);
+            PrintUpgradeStats();  // Add debug output after selection
+        } else if (Input::IsKeyPressed(SDL_SCANCODE_3)) {
+            waveSystem.SelectUpgrade(2);
+            PrintUpgradeStats();  // Add debug output after selection
+        }
+        return;  // Pause game while choosing
+    }
+    
     HandleInput();
 
     // Only update timer if game is being played
@@ -184,6 +197,146 @@ void Game::Update(float deltaTime) {
             if (controller->moveX >= 0) sprite->texture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_RIGHT);
             else if (controller->moveX < 0) sprite->texture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_LEFT);
             // If not moving, keep current sprite
+        }
+    }
+}
+
+void Game::PrintUpgradeStats() {
+    // Get system pointers
+
+    printf("\n=== Current Stats ===\n");
+    
+    // Shooter stats
+    printf("Shooter:\n");
+    printf("- Fire Rate Multiplier: %.2fx\n", shooterSystem.GetFireRateMultiplier());
+    printf("- Extra Projectiles: %d\n", shooterSystem.GetExtraProjectiles());
+    printf("- Damage Multiplier: %.2fx\n", shooterSystem.GetDamageMultiplier());
+    
+    // Movement stats
+    printf("\nMovement:\n");
+    printf("- Speed Multiplier: %.2fx\n", wasdSystem.GetSpeedMultiplier());
+    
+    // Physics stats
+    printf("\nPhysics:\n");
+    printf("- Grip Multiplier: %.2fx\n", icePhysicsSystem.GetGripMultiplier());
+    printf("- Knockback Resistance: %.2fx\n", icePhysicsSystem.GetKnockbackResistance());
+    
+    // Wave system stats
+    printf("\nDifficulty:\n");
+    printf("- Red Balloon Multiplier: %.2fx\n", waveSystem.GetRedBalloonMultiplier());
+    printf("- Blue Balloon Multiplier: %.2fx\n", waveSystem.GetBlueBalloonMultiplier());
+    printf("- Green Balloon Multiplier: %.2fx\n", waveSystem.GetGreenBalloonMultiplier());
+    printf("- Balloon Speed Multiplier: %.2fx\n", waveSystem.GetBalloonSpeedMultiplier());
+    printf("- Blue Projectile Speed: %.2fx\n", waveSystem.GetBlueProjectileSpeedMultiplier());
+    printf("- Green Projectile Speed: %.2fx\n", waveSystem.GetGreenProjectileSpeedMultiplier());
+    printf("- Damage Taken Multiplier: %.2fx\n", waveSystem.GetDamageMultiplier());
+    printf("=====================\n\n");
+}
+
+void Game::RenderUpgradeUI(){
+    // Draw upgrade UI when awaiting choice
+    if (waveSystem.IsAwaitingUpgradeChoice()) {
+        Font* font = ResourceManager::GetFont(fpsFontID);
+        if (font) {
+            SDL_Color titleColor = {255, 255, 255, 255};  // White
+            SDL_Color upgradeColor = {150, 255, 150, 255}; // Light green
+            SDL_Color difficultyColor = {255, 150, 150, 255}; // Light red
+            
+            // Draw title
+            const char* titleText = "Choose Your Upgrade";
+            SDL_Surface* titleSurface = TTF_RenderText_Solid(font->sdlFont, titleText, titleColor);
+            if (titleSurface) {
+                SDL_Texture* titleTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, titleSurface);
+                if (titleTexture) {
+                    SDL_Rect titleRect = {
+                        (WINDOW_WIDTH - titleSurface->w) / 2,  // Center horizontally
+                        150,  // Top position
+                        titleSurface->w,
+                        titleSurface->h
+                    };
+                    SDL_RenderCopy(g_Engine.window->renderer, titleTexture, NULL, &titleRect);
+                    SDL_DestroyTexture(titleTexture);
+                }
+                SDL_FreeSurface(titleSurface);
+            }
+
+            // Get upgrade choices
+            const UpgradeChoice* choices = waveSystem.GetCurrentUpgradeChoices();
+            
+            // Draw each upgrade choice
+            for (int i = 0; i < 3; i++) {
+                int boxX = WINDOW_WIDTH/4 + (i * WINDOW_WIDTH/4) - 150;  // Spread boxes horizontally
+                int boxY = 250;  // Vertical position
+                
+                // Draw box background
+                SDL_Rect boxRect = {boxX, boxY, 300, 200};
+                SDL_SetRenderDrawColor(g_Engine.window->renderer, 50, 50, 50, 200);
+                SDL_RenderFillRect(g_Engine.window->renderer, &boxRect);
+                
+                // Draw selection number
+                char numText[2] = {'1' + i, '\0'};
+                SDL_Surface* numSurface = TTF_RenderText_Solid(font->sdlFont, numText, titleColor);
+                if (numSurface) {
+                    SDL_Texture* numTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, numSurface);
+                    if (numTexture) {
+                        SDL_Rect numRect = {
+                            boxX + 10,
+                            boxY + 10,
+                            numSurface->w,
+                            numSurface->h
+                        };
+                        SDL_RenderCopy(g_Engine.window->renderer, numTexture, NULL, &numRect);
+                        SDL_DestroyTexture(numTexture);
+                    }
+                    SDL_FreeSurface(numSurface);
+                }
+
+                // Draw upgrade info
+                SDL_Surface* upgradeSurface = TTF_RenderText_Solid(font->sdlFont, 
+                    choices[i].upgrade.name, upgradeColor);
+                SDL_Surface* upgradeDescSurface = TTF_RenderText_Solid(font->sdlFont, 
+                    choices[i].upgrade.description, upgradeColor);
+                
+                // Draw difficulty info
+                SDL_Surface* diffSurface = TTF_RenderText_Solid(font->sdlFont, 
+                    choices[i].difficulty.name, difficultyColor);
+                SDL_Surface* diffDescSurface = TTF_RenderText_Solid(font->sdlFont, 
+                    choices[i].difficulty.description, difficultyColor);
+                
+                // Render all text surfaces
+                if (upgradeSurface && upgradeDescSurface && diffSurface && diffDescSurface) {
+                    SDL_Texture* upgradeTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, upgradeSurface);
+                    SDL_Texture* upgradeDescTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, upgradeDescSurface);
+                    SDL_Texture* diffTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, diffSurface);
+                    SDL_Texture* diffDescTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, diffDescSurface);
+                    
+                    if (upgradeTexture && upgradeDescTexture && diffTexture && diffDescTexture) {
+                        // Position all elements
+                        SDL_Rect upgradeRect = {boxX + 20, boxY + 50, upgradeSurface->w, upgradeSurface->h};
+                        SDL_Rect upgradeDescRect = {boxX + 20, boxY + 80, upgradeDescSurface->w, upgradeDescSurface->h};
+                        SDL_Rect diffRect = {boxX + 20, boxY + 120, diffSurface->w, diffSurface->h};
+                        SDL_Rect diffDescRect = {boxX + 20, boxY + 150, diffDescSurface->w, diffDescSurface->h};
+                        
+                        // Render all elements
+                        SDL_RenderCopy(g_Engine.window->renderer, upgradeTexture, NULL, &upgradeRect);
+                        SDL_RenderCopy(g_Engine.window->renderer, upgradeDescTexture, NULL, &upgradeDescRect);
+                        SDL_RenderCopy(g_Engine.window->renderer, diffTexture, NULL, &diffRect);
+                        SDL_RenderCopy(g_Engine.window->renderer, diffDescTexture, NULL, &diffDescRect);
+                        
+                        // Cleanup textures
+                        SDL_DestroyTexture(upgradeTexture);
+                        SDL_DestroyTexture(upgradeDescTexture);
+                        SDL_DestroyTexture(diffTexture);
+                        SDL_DestroyTexture(diffDescTexture);
+                    }
+                }
+                
+                // Cleanup surfaces
+                SDL_FreeSurface(upgradeSurface);
+                SDL_FreeSurface(upgradeDescSurface);
+                SDL_FreeSurface(diffSurface);
+                SDL_FreeSurface(diffDescSurface);
+            }
         }
     }
 }
@@ -471,6 +624,10 @@ void Game::Render() {
             }
         }
     }
+
+    if (waveSystem.IsAwaitingUpgradeChoice()) {
+        RenderUpgradeUI();
+    }
 }
 
 void Game::Cleanup() {
@@ -525,6 +682,10 @@ void Game::Reset() {
 
     // Reset wave system
     waveSystem.ResetWaves();
+
+    // resets upgrades
+    shooterSystem.Init();
+    icePhysicsSystem.Init();
 
     // Reset to start screen
     gameState = GAME_STATE_START;

@@ -85,12 +85,14 @@ struct WASDControllerComponent : Component {
     bool canMove;
     float moveX;
     float moveY;
+    float moveForce;
 
     void Init(float speed = 200.0f, bool enabled = true) {
         moveSpeed = speed;
         canMove = enabled;
         moveX = 0;
         moveY = 0;
+        moveForce = 1.0f;
     }
 
     void Destroy() override {
@@ -98,6 +100,7 @@ struct WASDControllerComponent : Component {
         canMove = false;
         moveX = 0;
         moveY = 0;
+        moveForce = 0.0f;
     }
 };
 
