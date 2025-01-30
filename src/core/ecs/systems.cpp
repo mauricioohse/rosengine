@@ -42,17 +42,19 @@ void SystemManager::UnregisterSystem(System* system) {
 }
 
 void SystemManager::UpdateSystems(float deltaTime, EntityManager* entities, ComponentArrays* components) {
+    bool shouldPause = g_Game.gameState == GAME_STATE_PAUSED || 
+                      g_Game.waveSystem.IsAwaitingUpgradeChoice();
+
     for (int i = 0; i < systemCount; i++) {
         if (systems[i]) {
-            // Only update render system if game is paused
-            if (g_Game.gameState == GAME_STATE_PAUSED) {
-                // Check if this is the render system (you might need to add a way to identify systems)
+            if (shouldPause) {
+                // Only update render system when paused or choosing upgrades
                 RenderSystem* renderSystem = dynamic_cast<RenderSystem*>(systems[i]);
                 if (renderSystem) {
                     systems[i]->Update(deltaTime, entities, components);
                 }
             } else {
-                // Update all systems when not paused
+                // Update all systems when game is active
                 systems[i]->Update(deltaTime, entities, components);
             }
         }
