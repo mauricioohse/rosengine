@@ -206,10 +206,12 @@ void Game::Update(float deltaTime) {
         }
         else
         {
-            // Normal movement animations
+
             if (controller->moveX >= 0) sprite->texture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_RIGHT);
             else if (controller->moveX < 0) sprite->texture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_LEFT);
             // If not moving, keep current sprite
+
+            // If not moving (velocityX == 0), keep current sprite
         }
     }
 }
@@ -535,7 +537,7 @@ void Game::Render() {
         // Format wave and score text
         snprintf(scoreText, sizeof(scoreText), "Score: %d - Wave %d-%d", 
                 currentScore, 
-                waveSystem.currentCycle + 1, waveSystem.currentWave + 1);
+                waveSystem.currentCycle + 1, waveSystem.currentWave );
         
         // Create text surface for score and wave
         SDL_Surface* textSurface = TTF_RenderText_Solid(font->sdlFont, scoreText, textColor);

@@ -104,6 +104,12 @@ void ShooterSystem::SpawnQuill(EntityManager* entities, ComponentArrays* compone
     Texture *quillTexture = ResourceManager::GetTexture(TEXTURE_PEANUT);
     ADD_SPRITE(quill, quillTexture);
 
+    SpriteComponent* sp = 
+        (SpriteComponent*)components->GetComponentData(quill, COMPONENT_SPRITE);
+
+    sp->width = 16;
+    sp->height = 32;
+
     // Initialize transform
     TransformComponent* transform = 
         (TransformComponent*)components->GetComponentData(quill, COMPONENT_TRANSFORM);
@@ -137,7 +143,7 @@ void ShooterSystem::SpawnQuill(EntityManager* entities, ComponentArrays* compone
     // Initialize collider
     ColliderComponent* collider = 
         (ColliderComponent*)components->GetComponentData(quill, COMPONENT_COLLIDER);
-    collider->Init(8, 8, false, true);  // Small trigger collider
+    collider->Init(14, 20, false, true);  // Small trigger collider
 
     // Spawn extra projectiles if we have any
     for(int i = 0; i < extraProjectiles; i++) {

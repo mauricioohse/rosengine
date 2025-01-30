@@ -26,10 +26,27 @@ void WASDControllerSystem::Update(float deltaTime, EntityManager* entities, Comp
             // Apply input forces with speed multiplier
             float moveForce = controller->moveSpeed * speedMultiplier;
             
-            if (Input::IsKeyDown(SDL_SCANCODE_W)) physics->velocityY -= moveForce * deltaTime;
-            if (Input::IsKeyDown(SDL_SCANCODE_S)) physics->velocityY += moveForce * deltaTime;
-            if (Input::IsKeyDown(SDL_SCANCODE_A)) physics->velocityX -= moveForce * deltaTime;
-            if (Input::IsKeyDown(SDL_SCANCODE_D)) physics->velocityX += moveForce * deltaTime;
+            // Reset movement values
+            controller->moveX = 0;
+            controller->moveY = 0;
+            
+            // Update movement values based on input
+            if (Input::IsKeyDown(SDL_SCANCODE_W)) {
+                physics->velocityY -= moveForce * deltaTime;
+                controller->moveY = -1;
+            }
+            if (Input::IsKeyDown(SDL_SCANCODE_S)) {
+                physics->velocityY += moveForce * deltaTime;
+                controller->moveY = 1;
+            }
+            if (Input::IsKeyDown(SDL_SCANCODE_A)) {
+                physics->velocityX -= moveForce * deltaTime;
+                controller->moveX = -1;
+            }
+            if (Input::IsKeyDown(SDL_SCANCODE_D)) {
+                physics->velocityX += moveForce * deltaTime;
+                controller->moveX = 1;
+            }
         }
     }
 }
