@@ -37,23 +37,21 @@ void WaveSystem::Update(float deltaTime, EntityManager* entities, ComponentArray
     if (awaitingUpgradeChoice || g_Game.gameState != GAME_STATE_PLAYING) {
         return;
     }
+    static bool once = false;
+
+    if (once)
+    {
+        SpawnWave(entities, components);
+        once = false;
+    }
 
     // Check if wave is complete
     if (NoBalloonsRemaining(entities)) {
         currentWave++;
-        
-        // Check if cycle is complete
-        if (currentWave >= 2) {
-            currentWave = 0;
-            currentCycle++;
-            
-            // Offer upgrades between cycles
-            GenerateUpgradeChoices();
-            awaitingUpgradeChoice = true;
-            return;
-        }
-        
-        SpawnWave(entities, components);
+        GenerateUpgradeChoices();
+        awaitingUpgradeChoice = true;
+        once = true;
+
     }
 }
 
@@ -88,7 +86,7 @@ int WaveSystem::GetScaledCount(int baseCount, BalloonType type) {
 }
 
 void WaveSystem::SpawnWave(EntityManager* entities, ComponentArrays* components) {
-    WaveData& baseWave = baseWaves[currentWave];
+    WaveData& baseWave = baseWaves[currentWave%5];
     
     for (const auto& spawn : baseWave.spawns) {
         int scaledCount = GetScaledCount(spawn.count, spawn.type);  // Pass balloon type
@@ -109,7 +107,7 @@ void WaveSystem::SpawnBalloon(BalloonType type, EntityManager* entities, Compone
     
     // Add components based on balloon type
     ADD_TRANSFORM(balloon, spawnX, spawnY, 0, 1);
-    ADD_PHYSICS(balloon, 10, 15);
+    ADD_PHYSICS(balloon, 50, 15, 1);
     ADD_COLLIDER(balloon, 32, 32, 0, 1);
     ADD_BALLOON(balloon, type, g_Game.squirrelEntity, 50, 100);
     

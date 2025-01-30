@@ -19,7 +19,7 @@ void IcePhysicsSystem::Update(float deltaTime, EntityManager* entities, Componen
             
             // Apply ice physics
             ApplyFriction(physics, deltaTime);
-            LimitSpeed(physics);
+            if (physics->hasSpeedCap) LimitSpeed(physics);
             
             // Update position based on velocity
             transform->x += physics->velocityX * deltaTime;
