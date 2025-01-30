@@ -473,28 +473,26 @@ void Game::Render() {
     // Draw score, combo and wave number
     Font* font = ResourceManager::GetFont(fpsFontID);
     if (font) {
-        SDL_Color textColor = {255, 255, 255, 255};
+        SDL_Color textColor = {255, 255, 255, 255};  // Default white color
         
         // Create score and wave text
         char scoreText[128];
-        if (comboMultiplier > 1.0f) {
-            snprintf(scoreText, sizeof(scoreText), "Score: %d (%.1fx) - Wave %d-%d", 
-                    currentScore, comboMultiplier, 
-                    waveSystem.currentCycle + 1, waveSystem.currentWave + 1);
-        } else {
-            snprintf(scoreText, sizeof(scoreText), "Score: %d - Wave %d-%d", 
-                    currentScore, 
-                    waveSystem.currentCycle + 1, waveSystem.currentWave + 1);
-        }
+        char comboText[32] = "";  // New separate text for combo
         
-        // Create text surface
+        // Format wave and score text
+        snprintf(scoreText, sizeof(scoreText), "Score: %d - Wave %d-%d", 
+                currentScore, 
+                waveSystem.currentCycle + 1, waveSystem.currentWave + 1);
+        
+        // Create text surface for score and wave
         SDL_Surface* textSurface = TTF_RenderText_Solid(font->sdlFont, scoreText, textColor);
         if (textSurface) {
             SDL_Texture* textTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, textSurface);
             if (textTexture) {
                 SDL_Rect destRect;
-                destRect.w = textSurface->w;
-                destRect.h = textSurface->h;
+                // Make score text 1.5x larger
+                destRect.w = (int)(textSurface->w * 1.5f);
+                destRect.h = (int)(textSurface->h * 1.5f);
                 destRect.x = (WINDOW_WIDTH - destRect.w) / 2;  // Center horizontally
                 destRect.y = 20;  // Near top of screen
                 
@@ -502,6 +500,47 @@ void Game::Render() {
                 SDL_DestroyTexture(textTexture);
             }
             SDL_FreeSurface(textSurface);
+        }
+
+        // Render combo multiplier if active
+        if (comboMultiplier > 1.0f) {
+            // Calculate color intensity based on combo (from white to red)
+            int redIntensity = 255;
+            int otherIntensity = (int)(255 * (2.0f - comboMultiplier / 2.0f));
+            otherIntensity = std::max(0, std::min(255, otherIntensity));
+            
+            SDL_Color comboColor = {
+                (Uint8)redIntensity,
+                (Uint8)otherIntensity,
+                (Uint8)otherIntensity,
+                255
+            };
+
+            snprintf(comboText, sizeof(comboText), "%.1fx", comboMultiplier);
+            
+            // Calculate scale factor based on combo (1.0 to 2.0)
+            float scale = 1.0f + (comboMultiplier - 1.0f) / 3.0f;  // Scales up with combo
+            
+            // Calculate wiggle based on combo and time
+            float wiggleIntensity = (comboMultiplier - 1.0f) * 5.0f;  // Increases with combo
+            float wiggleX = sin(gameTimer * 10.0f) * wiggleIntensity;
+            float wiggleY = cos(gameTimer * 8.0f) * wiggleIntensity;
+            
+            SDL_Surface* comboSurface = TTF_RenderText_Solid(font->sdlFont, comboText, comboColor);
+            if (comboSurface) {
+                SDL_Texture* comboTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, comboSurface);
+                if (comboTexture) {
+                    SDL_Rect comboRect;
+                    comboRect.w = (int)(comboSurface->w * scale);
+                    comboRect.h = (int)(comboSurface->h * scale);
+                    comboRect.x = (WINDOW_WIDTH - comboRect.w) / 2 + (int)wiggleX;  // Add wiggle to position
+                    comboRect.y = 60 + (int)wiggleY;  // Add wiggle to position
+                    
+                    SDL_RenderCopy(g_Engine.window->renderer, comboTexture, NULL, &comboRect);
+                    SDL_DestroyTexture(comboTexture);
+                }
+                SDL_FreeSurface(comboSurface);
+            }
         }
     }
 
