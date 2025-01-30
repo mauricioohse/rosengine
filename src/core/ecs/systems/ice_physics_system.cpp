@@ -1,4 +1,5 @@
 #include "ice_physics_system.h"
+#include "../../src/game/game.h"
 #include <math.h>
 
 void IcePhysicsSystem::Init() {
@@ -19,7 +20,7 @@ void IcePhysicsSystem::Update(float deltaTime, EntityManager* entities, Componen
             
             // Apply ice physics
             ApplyFriction(physics, deltaTime);
-            if (physics->hasSpeedCap) LimitSpeed(physics);
+            if (physics->hasSpeedCap) LimitSpeed(physics, entity, entities);
             
             // Update position based on velocity
             transform->x += physics->velocityX * deltaTime;
@@ -53,17 +54,27 @@ void IcePhysicsSystem::ApplyFriction(PhysicsComponent* physics, float deltaTime)
     }
 }
 
-void IcePhysicsSystem::LimitSpeed(PhysicsComponent* physics) {
+void IcePhysicsSystem::LimitSpeed(PhysicsComponent* physics, EntityID e, EntityManager* em) {
+    
     float currentSpeed = sqrtf(
         physics->velocityX * physics->velocityX + 
         physics->velocityY * physics->velocityY
     );
     
-    if (currentSpeed > physics->maxSpeed) {
-        float scale = physics->maxSpeed / currentSpeed;
-        physics->velocityX *= scale;
-        physics->velocityY *= scale;
+    float multiplier = 1;
+    if (g_Game.squirrelEntity == e)
+    {
+        PhysicsComponent *porcupinePhysics =
+            (PhysicsComponent *)g_Engine.componentArrays.GetComponentData(e, COMPONENT_PHYSICS);
+        multiplier *= 1 + (porcupinePhysics->damagePercent / 100);
     }
+
+        if (currentSpeed > physics->maxSpeed * multiplier)
+        {
+            float scale = physics->maxSpeed / currentSpeed;
+            physics->velocityX *= scale;
+            physics->velocityY *= scale;
+        }
 }
 
 void IcePhysicsSystem::ApplyRecoilForce(PhysicsComponent* physics, float forceX, float forceY) {
@@ -76,10 +87,12 @@ void IcePhysicsSystem::ApplyUpgrade(UpgradeType type, float value) {
     switch (type) {
         case UPGRADE_GRIP:
             gripMultiplier *= value;  // Improve ice grip
+            printf("Ice grip multiplier increased to %.2fx\n", gripMultiplier);
             break;
             
         case UPGRADE_RECOIL_RES:
             knockbackResistance *= value;  // Reduce recoil
+            printf("Knockback resistance increased to %.2fx\n", knockbackResistance);
             break;
     }
 }

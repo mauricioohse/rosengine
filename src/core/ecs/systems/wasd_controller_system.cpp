@@ -37,7 +37,9 @@ void WASDControllerSystem::Update(float deltaTime, EntityManager* entities, Comp
 void WASDControllerSystem::ApplyUpgrade(UpgradeType type, float value) {
     switch (type) {
         case UPGRADE_SPEED:
+            printf("Applying speed upgrade: %.2fx\n", value);
             speedMultiplier *= value;  // Increase movement speed
+            printf("New speed multiplier: %.2fx\n", speedMultiplier);
             break;
     }
 }

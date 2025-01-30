@@ -9,7 +9,7 @@ void ExplodeBalloon(EntityID balloonEntity, EntityManager* entities);
 
 class BalloonSystem : public System {
 public:
-    static constexpr float KNOCKBACK_FORCE = 300.0f;  // Force applied to porcupine on collision
+    static constexpr float KNOCKBACK_FORCE = 400.0f;  // Force applied to porcupine on collision
 
     void Init() override;
     void Update(float deltaTime, EntityManager *entities, ComponentArrays *components) override;

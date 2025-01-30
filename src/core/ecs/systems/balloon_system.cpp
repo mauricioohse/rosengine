@@ -285,7 +285,7 @@ void BalloonSystem::ShootLasers(float x, float y,
         // Add components
         ADD_TRANSFORM(laser, x, y, 0.0f, 1.0f);
         ADD_SPRITE(laser, ResourceManager::GetTexture(TEXTURE_LASER_GREEN));
-        ADD_PHYSICS(laser, 1.0f, 0.0f, 0);  // Light mass, no friction
+        ADD_PHYSICS(laser, 1.0f, 0.0f, 0, 500.0f);  // Light mass, no friction
         ADD_COLLIDER(laser, 16, 16, 0, 1);  // Adjust size as needed
         ADD_PROJECTILE(laser, LASER_DAMAGE, LASER_LIFETIME, dx, dy, 0);
         
@@ -325,7 +325,7 @@ void BalloonSystem::ShootAimedShot(float startX, float startY,
     // Add components
     ADD_TRANSFORM(laser, startX, startY, 0.0f, 1.0f);
     ADD_SPRITE(laser, ResourceManager::GetTexture(TEXTURE_LASER_BLUE));
-    ADD_PHYSICS(laser, 1.0f, 0.0f, 0);  // Light mass, no friction
+    ADD_PHYSICS(laser, 1.0f, 0.0f, 0, 500.0f);  // Light mass, no friction
     ADD_COLLIDER(laser, 16, 16, 0, 1);
     ADD_PROJECTILE(laser, BLUE_LASER_DAMAGE, BLUE_LASER_LIFETIME, dx, dy, 0);
     
@@ -364,7 +364,7 @@ void BalloonSystem::HandleBalloonCollision(EntityID balloonEntity,
     }
     
     // Increase damage percentage
-    porcupinePhysics->damagePercent += 10.0f; // Each balloon hit adds 10%
+    porcupinePhysics->damagePercent += 10.0f*g_Game.waveSystem.damageMultiplier; // Each balloon hit adds 10%
     
     // Calculate knockback multiplier based on damage percentage
     // Formula: 1.0 + (damage% / 100) gives us values like:

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <algorithm>
+#include <string.h>
 
 
 void WaveSystem::Init() {
@@ -107,7 +108,7 @@ void WaveSystem::SpawnBalloon(BalloonType type, EntityManager* entities, Compone
     
     // Add components based on balloon type
     ADD_TRANSFORM(balloon, spawnX, spawnY, 0, 1);
-    ADD_PHYSICS(balloon, 50, 15, 1);
+    ADD_PHYSICS(balloon, 50, 15, 1,  500.0f);
     ADD_COLLIDER(balloon, 32, 32, 0, 1);
     ADD_BALLOON(balloon, type, g_Game.squirrelEntity, 50, 100);
     
@@ -165,13 +166,18 @@ DifficultyType WaveSystem::GetRandomUnusedDifficulty(const std::vector<Difficult
         DifficultyType type = static_cast<DifficultyType>(i);
         if (IsDifficultyValid(type, usedTypes)) {
             availableTypes.push_back(type);
+            printf("Available difficulty: %s\n", GetDifficultyName(type));
         }
     }
     
     // Return random unused type
     if (!availableTypes.empty()) {
-        return availableTypes[rand() % availableTypes.size()];
+        DifficultyType selected = availableTypes[rand() % availableTypes.size()];
+        printf("Selected difficulty: %s\n", GetDifficultyName(selected));
+        return selected;
     }
+    
+    printf("No available difficulties, returning NONE\n");
     return DIFFICULTY_NONE;
 }
 
@@ -179,19 +185,43 @@ void WaveSystem::GenerateUpgradeChoices() {
     std::vector<UpgradeType> usedUpgrades;
     std::vector<DifficultyType> usedDifficulties;
     
+    printf("\n=== Generating New Upgrade Choices ===\n");
+    
     // Generate 3 unique upgrade-difficulty pairs
     for (int i = 0; i < 3; i++) {
+        printf("\nChoice %d:\n", i + 1);
+        
         // Get random unused upgrade
         UpgradeType upgradeType = GetRandomUnusedUpgrade(usedUpgrades);
         usedUpgrades.push_back(upgradeType);
         currentUpgradeChoices[i].upgrade = GetUpgradeData(upgradeType);
+        printf("Upgrade: %s\n", currentUpgradeChoices[i].upgrade.name);
         
         // Get random unused difficulty
         DifficultyType difficultyType = GetRandomUnusedDifficulty(usedDifficulties);
         usedDifficulties.push_back(difficultyType);
-        currentUpgradeChoices[i].difficulty = GenerateRandomDifficulty();
-        currentUpgradeChoices[i].difficulty.type = difficultyType;
+        
+        // Create the difficulty with proper description
+        Difficulty diff = GenerateRandomDifficulty();
+        diff.type = difficultyType;
+        diff.name = GetDifficultyName(difficultyType);
+        
+        // Copy the description to a new buffer for each choice
+        static char descriptions[3][128];  // Static array of buffers for 3 descriptions
+        strncpy(descriptions[i], GetDifficultyDescription(difficultyType, diff.value), sizeof(descriptions[i]) - 1);
+        descriptions[i][sizeof(descriptions[i]) - 1] = '\0';  // Ensure null termination
+        
+        diff.description = descriptions[i];
+        
+        currentUpgradeChoices[i].difficulty = diff;
+        
+        printf("Difficulty: %s (%.2fx) - %s\n", 
+               currentUpgradeChoices[i].difficulty.name,
+               currentUpgradeChoices[i].difficulty.value,
+               currentUpgradeChoices[i].difficulty.description);
     }
+    
+    printf("===================================\n\n");
 }
 
 Difficulty WaveSystem::GenerateRandomDifficulty() {
@@ -233,6 +263,9 @@ void WaveSystem::SelectUpgrade(int choice) {
 }
 
 void WaveSystem::ApplyUpgrade(const UpgradeChoice& choice) {
+    // Print upgrade info
+    printf("Applying upgrade: %s (%.2fx)\n", choice.upgrade.name, choice.upgrade.value);
+
     // Apply the upgrade based on type
     switch (choice.upgrade.type) {
         case UPGRADE_FIRE_RATE:
@@ -266,25 +299,39 @@ void WaveSystem::ApplyUpgrade(const UpgradeChoice& choice) {
     // Apply difficulty changes in wave system
     switch (choice.difficulty.type) {
         case DIFFICULTY_RED_QUANTITY:
+            printf("Red balloon multiplier: %.2f -> ", redBalloonMultiplier);
             redBalloonMultiplier *= choice.difficulty.value;
+            printf("%.2f\n", redBalloonMultiplier);
             break;
         case DIFFICULTY_BLUE_QUANTITY:
+            printf("Blue balloon multiplier: %.2f -> ", blueBalloonMultiplier);
             blueBalloonMultiplier *= choice.difficulty.value;
+            printf("%.2f\n", blueBalloonMultiplier);
             break;
         case DIFFICULTY_GREEN_QUANTITY:
+            printf("Green balloon multiplier: %.2f -> ", greenBalloonMultiplier);
             greenBalloonMultiplier *= choice.difficulty.value;
+            printf("%.2f\n", greenBalloonMultiplier);
             break;
         case DIFFICULTY_BALLOON_SPEED:
+            printf("Balloon speed multiplier: %.2f -> ", balloonSpeedMultiplier);
             balloonSpeedMultiplier *= choice.difficulty.value;
+            printf("%.2f\n", balloonSpeedMultiplier);
             break;
         case DIFFICULTY_BLUE_PROJECTILE_SPEED:
+            printf("Blue projectile speed multiplier: %.2f -> ", blueProjectileSpeedMultiplier);
             blueProjectileSpeedMultiplier *= choice.difficulty.value;
+            printf("%.2f\n", blueProjectileSpeedMultiplier);
             break;
         case DIFFICULTY_GREEN_PROJECTILE_SPEED:
+            printf("Green projectile speed multiplier: %.2f -> ", greenProjectileSpeedMultiplier);
             greenProjectileSpeedMultiplier *= choice.difficulty.value;
+            printf("%.2f\n", greenProjectileSpeedMultiplier);
             break;
         case DIFFICULTY_DAMAGE_TAKEN:
+            printf("Damage taken multiplier: %.2f -> ", damageMultiplier);
             damageMultiplier *= choice.difficulty.value;
+            printf("%.2f\n", damageMultiplier);
             break;
     }
 }

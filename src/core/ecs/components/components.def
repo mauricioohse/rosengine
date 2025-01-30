@@ -9,7 +9,7 @@ component_macros.h      - makes it easier to ADD_COMPONENT()
 
 xcomponent(TRANSFORM, Transform, 0, (EntityID entity, float x, float y, float rotation, float scale), (x, y, rotation, scale))
 xcomponent(SPRITE, Sprite, 1, (EntityID entity, Texture* texture), (texture))
-xcomponent(PHYSICS, Physics,11,(EntityID entity, float initialMass , float iceFriction, bool speedCap), ( initialMass ,  iceFriction,  speedCap) )
+xcomponent(PHYSICS, Physics,11,(EntityID entity, float initialMass , float iceFriction, bool speedCap, float maxSpeed_), ( initialMass ,  iceFriction,  speedCap, maxSpeed_) )
 xcomponent(QUILL, Quill,12,(EntityID entity, float dmg, float life, EntityID own), ( dmg,  life,  own) )
 xcomponent(SHOOTER, Shooter,13,(EntityID entity, float qSpeed, float rForce, float fRate), ( qSpeed, rForce, fRate) )
 xcomponent(BALLOON, Balloon,14,(EntityID entity, BalloonType type, EntityID target, float speed, float health), (type, target, speed, health))

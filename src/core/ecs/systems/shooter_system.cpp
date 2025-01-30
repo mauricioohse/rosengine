@@ -56,10 +56,10 @@ void ShooterSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                         physics->velocityX -= dirX * shooter->recoilForce;
                         physics->velocityY -= dirY * shooter->recoilForce;
 
-                        // Apply additional half recoil for each extra projectile
+                        // Apply additional 80% recoil for each extra projectile
                         for(int i = 0; i < extraProjectiles; i++) {
-                            physics->velocityX -= dirX * shooter->recoilForce/2;
-                            physics->velocityY -= dirY * shooter->recoilForce/2;
+                            physics->velocityX -= dirX * shooter->recoilForce*.8;
+                            physics->velocityY -= dirY * shooter->recoilForce*.8;
                         }
 
                         printf("shooter entity %d mouse (%d, %d) screen center (%d, %d) force (%f,%f) \n", 
@@ -268,18 +268,21 @@ void ShooterSystem::UpdateQuills(float deltaTime, EntityManager* entities, Compo
 void ShooterSystem::Destroy() {
     printf("ShooterSystem destroyed\n");
 }
-
 void ShooterSystem::ApplyUpgrade(UpgradeType type, float value) {
+    printf("ShooterSystem applying upgrade: ");
     switch (type) {
         case UPGRADE_FIRE_RATE:
+            printf("Fire Rate %.2fx\n", value);
             fireRateMultiplier *= value;  // Reduce fire rate (value < 1.0)
             break;
             
         case UPGRADE_MULTI_SHOT:
+            printf("Multi Shot +%d\n", (int)value);
             extraProjectiles += (int)value;  // Add extra projectiles
             break;
                         
         case UPGRADE_RECOIL_RES:
+            printf("Recoil Resistance (handled by IcePhysicsSystem)\n");
             // This will be handled by IcePhysicsSystem
             break;
     }

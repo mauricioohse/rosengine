@@ -9,7 +9,7 @@ struct IcePhysicsSystem : System {
     
     // Helper functions
     void ApplyFriction(PhysicsComponent* physics, float deltaTime);
-    void LimitSpeed(PhysicsComponent* physics);
+    void LimitSpeed(PhysicsComponent* physics, EntityID e, EntityManager* em);
     void ApplyRecoilForce(PhysicsComponent* physics, float forceX, float forceY);
 
     void ApplyUpgrade(UpgradeType type, float value);

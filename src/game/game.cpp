@@ -59,11 +59,11 @@ bool Game::Init() {
     Texture* squirrelTexture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_LEFT);    
     // Add basic components
     ADD_TRANSFORM(squirrelEntity, 1200.0f, 100.0f, 0.0f, 1.0f);  // Center-top of screen
-    ADD_PHYSICS(squirrelEntity, 50, 2, 0);
+    ADD_PHYSICS(squirrelEntity, 50, 2, 1,  750.0f);
     ADD_SPRITE(squirrelEntity, squirrelTexture);
-    ADD_WASD_CONTROLLER(squirrelEntity, 400, 1);
+    ADD_WASD_CONTROLLER(squirrelEntity, 600, 1);
     ADD_COLLIDER(squirrelEntity, 32, 32, 0, 0);
-    ADD_SHOOTER(squirrelEntity, 300.0f, 300.0f, 1.0f);
+    ADD_SHOOTER(squirrelEntity, 800.0f, 200.0f, 1.0f);
 
     // create camera
     cameraEntity = g_Engine.entityManager.CreateEntity();
@@ -262,6 +262,19 @@ void Game::RenderUpgradeUI(){
 
             // Get upgrade choices
             const UpgradeChoice* choices = waveSystem.GetCurrentUpgradeChoices();
+            
+            // Print difficulties once when choices are retrieved
+            static bool printedChoices = false;
+            if (!printedChoices) {
+                printf("\nUpgrade choices difficulties:\n");
+                for (int i = 0; i < 3; i++) {
+                    printf("Choice %d: %s (%.2fx)\n", i+1, 
+                           choices[i].difficulty.name,
+                           choices[i].difficulty.value);
+                }
+                printf("\n");
+                printedChoices = true;
+            }
             
             // Draw each upgrade choice
             for (int i = 0; i < 3; i++) {

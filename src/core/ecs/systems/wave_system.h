@@ -103,13 +103,13 @@ public:
         currentWave = 0;
         currentCycle = 0;
         spawnTimer = 0.0f;
-        float redBalloonMultiplier = 1.0f;
-        float blueBalloonMultiplier = 1.0f;
-        float greenBalloonMultiplier = 1.0f;
-        float balloonSpeedMultiplier = 1.0f;
-        float blueProjectileSpeedMultiplier = 1.0f;
-        float greenProjectileSpeedMultiplier = 1.0f;
-        float damageMultiplier = 1.0f;
+        redBalloonMultiplier = 1.0f;
+        blueBalloonMultiplier = 1.0f;
+        greenBalloonMultiplier = 1.0f;
+        balloonSpeedMultiplier = 1.0f;
+        blueProjectileSpeedMultiplier = 1.0f;
+        greenProjectileSpeedMultiplier = 1.0f;
+        damageMultiplier = 1.0f;
     }
     bool IsAwaitingUpgradeChoice() const { return awaitingUpgradeChoice; }
     const UpgradeChoice* GetCurrentUpgradeChoices() const { return currentUpgradeChoices; }
