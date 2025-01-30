@@ -415,17 +415,17 @@ const char* WaveSystem::GetDifficultyDescription(DifficultyType type, float valu
     switch (type) {
         case DIFFICULTY_RED_QUANTITY:
             snprintf(description, sizeof(description), 
-                    "%.0f more red balloon(s) per wave", value);
+                    "%.0f times more red balloon(s) per wave", value);
             break;
             
         case DIFFICULTY_BLUE_QUANTITY:
             snprintf(description, sizeof(description), 
-                    "%.0f more blue balloon(s) per wave", value);
+                    "%.0f times more blue balloon(s) per wave", value);
             break;
             
         case DIFFICULTY_GREEN_QUANTITY:
             snprintf(description, sizeof(description), 
-                    "%.0f more green balloon(s) per wave", value);
+                    "%.0f times more green balloon(s) per wave", value);
             break;
             
         case DIFFICULTY_BALLOON_SPEED:

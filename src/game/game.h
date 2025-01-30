@@ -21,7 +21,8 @@
 enum GameState {
     GAME_STATE_START,    // New state for start screen
     GAME_STATE_PLAYING,
-    GAME_STATE_GAMEOVER
+    GAME_STATE_GAMEOVER,
+    GAME_STATE_PAUSED
 };
 
 struct PeanutTarget {

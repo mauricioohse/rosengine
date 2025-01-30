@@ -133,7 +133,7 @@ static const TextureResource GAME_TEXTURES[] = {
 
 static const SoundResource GAME_SOUNDS[] = {
     {"assets/sounds/hit.wav", SOUND_HIT},
-    {"assets/sounds/music.mp3", SOUND_BACKGROUND_MUSIC},
+    {"assets/sounds/malformed_loop_1.mpeg", SOUND_BACKGROUND_MUSIC},
     {"assets/sounds/helicopter.wav", SOUND_HELICOPTER}, // 49483__lorenzosu__helicopterraw_30sec.wav
     {"assets/sounds/wind.mp3", SOUND_WIND}, // 420301__tonik-95__wind18.m4a
     {"assets/sounds/hit.wav", SOUND_CLOUD_HIT},      // Add this
@@ -146,7 +146,7 @@ static const SoundResource GAME_SOUNDS[] = {
 };
 
 static const FontResource GAME_FONTS[] = {
-    {"assets/fonts/VCR_OSD_MONO_1.001.ttf", 16, FONT_FPS},
+    {"assets/fonts/VeniteAdoremusStraight-Yzo6v.ttf", 16, FONT_FPS},
     // Add new fonts here
 };
 

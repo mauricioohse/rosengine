@@ -94,6 +94,17 @@ bool Game::Init() {
 
 // logic related to inputs on the game should go here
 void Game::HandleInput(){
+    // Handle pause toggle with Enter key
+    if (Input::IsKeyPressed(SDL_SCANCODE_ESCAPE)) {
+        if (gameState == GAME_STATE_PLAYING) {
+            gameState = GAME_STATE_PAUSED;
+            return;
+        } else if (gameState == GAME_STATE_PAUSED) {
+            gameState = GAME_STATE_PLAYING;
+            return;
+        }
+    }
+
     // Check for game start inputs when in start state
     if (gameState == GAME_STATE_START) {
         if (Input::IsKeyPressed(SDL_SCANCODE_W) || 
@@ -109,10 +120,12 @@ void Game::HandleInput(){
     }
 
     // Debug: Force upgrade selection with ESC
-    if (Input::IsKeyPressed(SDL_SCANCODE_ESCAPE) && gameState == GAME_STATE_PLAYING) {
+#ifdef DEBUG
+    if (Input::IsKeyPressed(SDL_SCANCODE_T) && gameState == GAME_STATE_PLAYING) {
         waveSystem.GenerateUpgradeChoices();
         waveSystem.SetAwaitingUpgradeChoice(true);
     }
+#endif
 
     // Add reset on 'R' key press
     if (Input::IsKeyPressed(SDL_SCANCODE_R)) {
@@ -249,10 +262,10 @@ void Game::RenderUpgradeUI(){
                 SDL_Texture* titleTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, titleSurface);
                 if (titleTexture) {
                     SDL_Rect titleRect = {
-                        (WINDOW_WIDTH - titleSurface->w) / 2,  // Center horizontally
+                        (WINDOW_WIDTH - (titleSurface->w * 2)) / 2,  // Center horizontally, accounting for 2x scale
                         150,  // Top position
-                        titleSurface->w,
-                        titleSurface->h
+                        titleSurface->w * 2,  // Double the width
+                        titleSurface->h * 2   // Double the height
                     };
                     SDL_RenderCopy(g_Engine.window->renderer, titleTexture, NULL, &titleRect);
                     SDL_DestroyTexture(titleTexture);
@@ -279,7 +292,7 @@ void Game::RenderUpgradeUI(){
             // Draw each upgrade choice
             for (int i = 0; i < 3; i++) {
                 int boxX = WINDOW_WIDTH/4 + (i * WINDOW_WIDTH/4) - 150;  // Spread boxes horizontally
-                int boxY = 250;  // Vertical position
+                int boxY = (i == 1) ? 450 : 200;  // Middle option is lower
                 
                 // Draw box background
                 SDL_Rect boxRect = {boxX, boxY, 300, 200};
@@ -311,44 +324,84 @@ void Game::RenderUpgradeUI(){
                     choices[i].upgrade.description, upgradeColor);
                 
                 // Draw difficulty info
-                SDL_Surface* diffSurface = TTF_RenderText_Solid(font->sdlFont, 
-                    choices[i].difficulty.name, difficultyColor);
-                SDL_Surface* diffDescSurface = TTF_RenderText_Solid(font->sdlFont, 
-                    choices[i].difficulty.description, difficultyColor);
+                char difficultyLine1[64];
+                char difficultyLine2[64];
+                char difficultyLine3[64];
+                const int MAX_LINE_LENGTH = 30;  // Maximum characters per line
+
+                snprintf(difficultyLine1, sizeof(difficultyLine1), "%s", choices[i].difficulty.name);
+
+                // Split description into two lines
+                const char* desc = choices[i].difficulty.description;
+                int descLength = strlen(desc);
+                
+                if (descLength > MAX_LINE_LENGTH) {
+                    // Find the last space before MAX_LINE_LENGTH
+                    int splitPoint = MAX_LINE_LENGTH;
+                    while (splitPoint > 0 && desc[splitPoint] != ' ') {
+                        splitPoint--;
+                    }
+                    if (splitPoint == 0) splitPoint = MAX_LINE_LENGTH; // No space found
+
+                    // Copy first line
+                    strncpy(difficultyLine2, desc, splitPoint);
+                    difficultyLine2[splitPoint] = '\0';
+                    
+                    // Copy second line
+                    strncpy(difficultyLine3, desc + splitPoint + 1, sizeof(difficultyLine3) - 1);
+                } else {
+                    // Description fits on one line
+                    strncpy(difficultyLine2, desc, sizeof(difficultyLine2) - 1);
+                    difficultyLine3[0] = '\0';
+                }
+
+                // Add multiplier value to the last line
+                char multiplierText[16];
+                snprintf(multiplierText, sizeof(multiplierText), " (%.2fx)", choices[i].difficulty.value);
+                strncat(difficultyLine3, multiplierText, sizeof(difficultyLine3) - strlen(difficultyLine3) - 1);
+                
+                SDL_Surface* diffSurface1 = TTF_RenderText_Solid(font->sdlFont, difficultyLine1, difficultyColor);
+                SDL_Surface* diffSurface2 = TTF_RenderText_Solid(font->sdlFont, difficultyLine2, difficultyColor);
+                SDL_Surface* diffSurface3 = TTF_RenderText_Solid(font->sdlFont, difficultyLine3, difficultyColor);
                 
                 // Render all text surfaces
-                if (upgradeSurface && upgradeDescSurface && diffSurface && diffDescSurface) {
+                if (upgradeSurface && upgradeDescSurface && diffSurface1 && diffSurface2 && diffSurface3) {
                     SDL_Texture* upgradeTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, upgradeSurface);
                     SDL_Texture* upgradeDescTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, upgradeDescSurface);
-                    SDL_Texture* diffTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, diffSurface);
-                    SDL_Texture* diffDescTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, diffDescSurface);
+                    SDL_Texture* diffTexture1 = SDL_CreateTextureFromSurface(g_Engine.window->renderer, diffSurface1);
+                    SDL_Texture* diffTexture2 = SDL_CreateTextureFromSurface(g_Engine.window->renderer, diffSurface2);
+                    SDL_Texture* diffTexture3 = SDL_CreateTextureFromSurface(g_Engine.window->renderer, diffSurface3);
                     
-                    if (upgradeTexture && upgradeDescTexture && diffTexture && diffDescTexture) {
+                    if (upgradeTexture && upgradeDescTexture && diffTexture1 && diffTexture2 && diffTexture3) {
                         // Position all elements
                         SDL_Rect upgradeRect = {boxX + 20, boxY + 50, upgradeSurface->w, upgradeSurface->h};
                         SDL_Rect upgradeDescRect = {boxX + 20, boxY + 80, upgradeDescSurface->w, upgradeDescSurface->h};
-                        SDL_Rect diffRect = {boxX + 20, boxY + 120, diffSurface->w, diffSurface->h};
-                        SDL_Rect diffDescRect = {boxX + 20, boxY + 150, diffDescSurface->w, diffDescSurface->h};
+                        SDL_Rect diffRect1 = {boxX + 20, boxY + 120, diffSurface1->w, diffSurface1->h};
+                        SDL_Rect diffRect2 = {boxX + 20, boxY + 140, diffSurface2->w, diffSurface2->h};
+                        SDL_Rect diffRect3 = {boxX + 20, boxY + 160, diffSurface3->w, diffSurface3->h};
                         
                         // Render all elements
                         SDL_RenderCopy(g_Engine.window->renderer, upgradeTexture, NULL, &upgradeRect);
                         SDL_RenderCopy(g_Engine.window->renderer, upgradeDescTexture, NULL, &upgradeDescRect);
-                        SDL_RenderCopy(g_Engine.window->renderer, diffTexture, NULL, &diffRect);
-                        SDL_RenderCopy(g_Engine.window->renderer, diffDescTexture, NULL, &diffDescRect);
+                        SDL_RenderCopy(g_Engine.window->renderer, diffTexture1, NULL, &diffRect1);
+                        SDL_RenderCopy(g_Engine.window->renderer, diffTexture2, NULL, &diffRect2);
+                        SDL_RenderCopy(g_Engine.window->renderer, diffTexture3, NULL, &diffRect3);
                         
                         // Cleanup textures
                         SDL_DestroyTexture(upgradeTexture);
                         SDL_DestroyTexture(upgradeDescTexture);
-                        SDL_DestroyTexture(diffTexture);
-                        SDL_DestroyTexture(diffDescTexture);
+                        SDL_DestroyTexture(diffTexture1);
+                        SDL_DestroyTexture(diffTexture2);
+                        SDL_DestroyTexture(diffTexture3);
                     }
                 }
                 
                 // Cleanup surfaces
                 SDL_FreeSurface(upgradeSurface);
                 SDL_FreeSurface(upgradeDescSurface);
-                SDL_FreeSurface(diffSurface);
-                SDL_FreeSurface(diffDescSurface);
+                SDL_FreeSurface(diffSurface1);
+                SDL_FreeSurface(diffSurface2);
+                SDL_FreeSurface(diffSurface3);
             }
         }
     }
@@ -679,6 +732,57 @@ void Game::Render() {
 
     if (waveSystem.IsAwaitingUpgradeChoice()) {
         RenderUpgradeUI();
+    }
+
+    // Add pause menu rendering at the end of the Render function:
+    if (gameState == GAME_STATE_PAUSED && !waveSystem.IsAwaitingUpgradeChoice()) {
+        Font* font = ResourceManager::GetFont(fpsFontID);
+        if (font) {
+            SDL_Color textColor = {255, 255, 255, 255};
+            
+            // Create semi-transparent dark overlay
+            SDL_SetRenderDrawBlendMode(g_Engine.window->renderer, SDL_BLENDMODE_BLEND);
+            SDL_SetRenderDrawColor(g_Engine.window->renderer, 0, 0, 0, 128);
+            SDL_Rect overlay = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+            SDL_RenderFillRect(g_Engine.window->renderer, &overlay);
+            
+            const char* pauseText = "PAUSED";
+            const char* continueText = "Press ENTER to continue";
+            
+            // Render PAUSED text
+            SDL_Surface* pauseSurface = TTF_RenderText_Solid(font->sdlFont, pauseText, textColor);
+            if (pauseSurface) {
+                SDL_Texture* pauseTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, pauseSurface);
+                if (pauseTexture) {
+                    SDL_Rect pauseRect;
+                    pauseRect.w = pauseSurface->w * 2;  // Make text larger
+                    pauseRect.h = pauseSurface->h * 2;
+                    pauseRect.x = (WINDOW_WIDTH - pauseRect.w) / 2;
+                    pauseRect.y = (WINDOW_HEIGHT - pauseRect.h) / 2 - 40;
+                    
+                    SDL_RenderCopy(g_Engine.window->renderer, pauseTexture, NULL, &pauseRect);
+                    SDL_DestroyTexture(pauseTexture);
+                }
+                SDL_FreeSurface(pauseSurface);
+            }
+            
+            // Render continue text
+            SDL_Surface* continueSurface = TTF_RenderText_Solid(font->sdlFont, continueText, textColor);
+            if (continueSurface) {
+                SDL_Texture* continueTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, continueSurface);
+                if (continueTexture) {
+                    SDL_Rect continueRect;
+                    continueRect.w = continueSurface->w;
+                    continueRect.h = continueSurface->h;
+                    continueRect.x = (WINDOW_WIDTH - continueRect.w) / 2;
+                    continueRect.y = (WINDOW_HEIGHT - continueRect.h) / 2 + 40;
+                    
+                    SDL_RenderCopy(g_Engine.window->renderer, continueTexture, NULL, &continueRect);
+                    SDL_DestroyTexture(continueTexture);
+                }
+                SDL_FreeSurface(continueSurface);
+            }
+        }
     }
 }
 

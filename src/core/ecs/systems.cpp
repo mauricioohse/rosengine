@@ -1,4 +1,5 @@
 #include "systems.h"
+#include "../../src/game/game.h"
 #include <stdio.h>
 
 void SystemManager::Init() {
@@ -43,7 +44,17 @@ void SystemManager::UnregisterSystem(System* system) {
 void SystemManager::UpdateSystems(float deltaTime, EntityManager* entities, ComponentArrays* components) {
     for (int i = 0; i < systemCount; i++) {
         if (systems[i]) {
-            systems[i]->Update(deltaTime, entities, components);
+            // Only update render system if game is paused
+            if (g_Game.gameState == GAME_STATE_PAUSED) {
+                // Check if this is the render system (you might need to add a way to identify systems)
+                RenderSystem* renderSystem = dynamic_cast<RenderSystem*>(systems[i]);
+                if (renderSystem) {
+                    systems[i]->Update(deltaTime, entities, components);
+                }
+            } else {
+                // Update all systems when not paused
+                systems[i]->Update(deltaTime, entities, components);
+            }
         }
     }
 }
