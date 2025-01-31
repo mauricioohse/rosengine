@@ -239,7 +239,6 @@ void ShooterSystem::UpdateQuills(float deltaTime, EntityManager* entities, Compo
                                             balloonTransform, balloonCollider,
                                             penetrationX, penetrationY)) 
                     {
-
                         // Get balloon type before destroying it
                         BalloonComponent *balloon =
                             (BalloonComponent *)g_Engine.componentArrays.GetComponentData(balloonEntity, COMPONENT_BALLOON);

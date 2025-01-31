@@ -87,6 +87,11 @@ enum TextureID {
     TEXTURE_BALLOON_BLUE,
     TEXTURE_LASER_GREEN,
     TEXTURE_LASER_BLUE,
+    TEXTURE_BALLOON_RED_EXPLODE,
+    TEXTURE_BALLOON_GREEN_EXPLODE,
+    TEXTURE_BALLOON_BLUE_EXPLODE,
+    TEXTURE_PORCUPINE_LEFT_LAUNCH,
+    TEXTURE_PORCUPINE_RIGHT_LAUNCH,
     TEXTURE_MAX
 };
 
@@ -125,6 +130,11 @@ static const TextureResource GAME_TEXTURES[] = {
     {"assets/sprites/balloons/blue_balloon.png",TEXTURE_BALLOON_BLUE},
     {"assets/sprites/balloons/green_laser.png",TEXTURE_LASER_GREEN},
     {"assets/sprites/balloons/blue_laser.png",TEXTURE_LASER_BLUE},
+    {"assets/sprites/balloons/red_ballon_explode.png", TEXTURE_BALLOON_RED_EXPLODE},
+    {"assets/sprites/balloons/green_ballon_explode.png", TEXTURE_BALLOON_GREEN_EXPLODE}, 
+    {"assets/sprites/balloons/blue_ballon_explode.png", TEXTURE_BALLOON_BLUE_EXPLODE},
+    {"assets/sprites/squirrel/porcupine_launched_left.png", TEXTURE_PORCUPINE_LEFT_LAUNCH},
+    {"assets/sprites/squirrel/porcupine_launched_right.png", TEXTURE_PORCUPINE_RIGHT_LAUNCH},
     // Add new textures here
 };
 

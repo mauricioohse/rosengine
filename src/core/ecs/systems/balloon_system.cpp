@@ -19,6 +19,39 @@ bool BalloonCheckCollision(
 }
 
 void BalloonSystem::Update(float deltaTime, EntityManager* entities, ComponentArrays* components) {
+    // First, update explosion timers and destroy expired balloons
+    for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
+        if (entities->HasComponent(entity, COMPONENT_BALLOON)) {
+            BalloonComponent* balloon = 
+                (BalloonComponent*)components->GetComponentData(entity, COMPONENT_BALLOON);
+            
+            if (balloon && balloon->isExploding) {
+                // Disable collisions during explosion
+                ColliderComponent* collider = 
+                    (ColliderComponent*)components->GetComponentData(entity, COMPONENT_COLLIDER);
+                if (collider) {
+                    collider->isTrigger = true;  // Prevent collision response
+                }
+                
+                // Stop all movement
+                PhysicsComponent* physics = 
+                    (PhysicsComponent*)components->GetComponentData(entity, COMPONENT_PHYSICS);
+                if (physics) {
+                    physics->velocityX = 0;
+                    physics->velocityY = 0;
+                }
+                
+                balloon->explosionTimer -= deltaTime;
+                if (balloon->explosionTimer <= 0) {
+                    entities->DestroyEntity(entity);
+                    continue;
+                }
+                // Skip regular updates if exploding
+                continue;
+            }
+        }
+    }
+
     for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
         if (entities->HasComponent(entity, COMPONENT_BALLOON | COMPONENT_TRANSFORM | COMPONENT_PHYSICS)) {
             BalloonComponent* balloon = 
@@ -344,6 +377,31 @@ void BalloonSystem::HandleBalloonCollision(EntityID balloonEntity,
                                          PhysicsComponent* porcupinePhysics,
                                          EntityManager* entities) 
 {
+    // Get the balloon component to set explosion state
+    BalloonComponent* balloon = 
+        (BalloonComponent*)g_Engine.componentArrays.GetComponentData(balloonEntity, COMPONENT_BALLOON);
+    SpriteComponent* sprite = 
+        (SpriteComponent*)g_Engine.componentArrays.GetComponentData(balloonEntity, COMPONENT_SPRITE);
+        
+    if (balloon && sprite) {
+        // Set explosion state
+        balloon->isExploding = true;
+        balloon->explosionTimer = 0.3f; // 300ms
+        
+        // Change sprite based on balloon type
+        switch (balloon->type) {
+            case BALLOON_RED:
+                sprite->texture = ResourceManager::GetTexture(TEXTURE_BALLOON_RED_EXPLODE);
+                break;
+            case BALLOON_GREEN:
+                sprite->texture = ResourceManager::GetTexture(TEXTURE_BALLOON_GREEN_EXPLODE);
+                break;
+            case BALLOON_BLUE:
+                sprite->texture = ResourceManager::GetTexture(TEXTURE_BALLOON_BLUE_EXPLODE);
+                break;
+        }
+    }
+
     g_Game.g_Porcupine_is_hit = true;
 
     // Play hit sound
@@ -387,13 +445,37 @@ void BalloonSystem::HandleBalloonCollision(EntityID balloonEntity,
     }
     
     // Destroy the balloon
-    ExplodeBalloon(balloonEntity, entities);
+    // ExplodeBalloon(balloonEntity, entities);
 }
 
-void ExplodeBalloon(EntityID balloonEntity, EntityManager* entities) {
-    // For now, just destroy the entity
-    // Later we can add particle effects, sound, etc.
-    entities->DestroyEntity(balloonEntity);
+void ExplodeBalloon(EntityID balloonEntity, EntityManager *entities)
+{
+    // Get the balloon component to set explosion state
+    BalloonComponent *balloon =
+        (BalloonComponent *)g_Engine.componentArrays.GetComponentData(balloonEntity, COMPONENT_BALLOON);
+    SpriteComponent *sprite =
+        (SpriteComponent *)g_Engine.componentArrays.GetComponentData(balloonEntity, COMPONENT_SPRITE);
+
+    if (balloon && sprite)
+    {
+        // Set explosion state
+        balloon->isExploding = true;
+        balloon->explosionTimer = 0.3f; // 300ms
+
+        // Change sprite based on balloon type
+        switch (balloon->type)
+        {
+        case BALLOON_RED:
+            sprite->texture = ResourceManager::GetTexture(TEXTURE_BALLOON_RED_EXPLODE);
+            break;
+        case BALLOON_GREEN:
+            sprite->texture = ResourceManager::GetTexture(TEXTURE_BALLOON_GREEN_EXPLODE);
+            break;
+        case BALLOON_BLUE:
+            sprite->texture = ResourceManager::GetTexture(TEXTURE_BALLOON_BLUE_EXPLODE);
+            break;
+        }
+    }
 }
 
 void BalloonSystem::Destroy() {

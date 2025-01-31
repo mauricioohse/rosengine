@@ -15,6 +15,8 @@ struct BalloonComponent : Component {
     float health;          // Current health
     float shootTimer;    // Timer for shooting lasers
     float orbitAngle;    // Angle for circular movement
+    float explosionTimer;
+    bool isExploding;
 
     void Init(BalloonType balloonType = BALLOON_RED, 
               EntityID target = 0, 
@@ -27,6 +29,8 @@ struct BalloonComponent : Component {
         health = initialHealth;
         shootTimer = 0.0f;
         orbitAngle = 0.0f;
+        explosionTimer = 0.0f;
+        isExploding = false;
     }
     
     void Destroy() override {
@@ -35,5 +39,7 @@ struct BalloonComponent : Component {
         health = 0.0f;
         shootTimer = 0.0f;
         orbitAngle = 0.0f;
+        explosionTimer = 0.0f;
+        isExploding = false;
     }
 }; 

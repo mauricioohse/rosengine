@@ -166,7 +166,7 @@ void Game::Update(float deltaTime) {
         float dy = squirrelTransform->y;
         float distanceFromCenter = sqrt(dx*dx + dy*dy);
         
-        if (distanceFromCenter > 800.0f) {
+        if (distanceFromCenter > 1000.0f) {
 
 
             Reset();
@@ -427,7 +427,7 @@ void Game::Render() {
     // Draw arena boundary circle
     SDL_SetRenderDrawColor(g_Engine.window->renderer, 255, 0, 0, 255);  // Red color
     const int SEGMENTS = 32;  // Number of line segments to draw the circle
-    const float RADIUS = 800.0f;
+    const float RADIUS = 1000.0f;
     
     for (int i = 0; i < SEGMENTS; i++) {
         float angle1 = (float)i * 2.0f * 3.14159f / SEGMENTS;
