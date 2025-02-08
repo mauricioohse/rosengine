@@ -73,7 +73,7 @@ Handles:
 - Resolution control
 
 ## Key Features
-- Component-based architecture
+- ECS-based architecture
 - Flexible entity system
 - Resource management with automatic cleanup
 - Sound and music support
@@ -105,10 +105,3 @@ Games built with RoseEngine should:
 4. Clean up entities and components explicitly
 5. Use the provided macros for component operations
 
-## Future Improvements
-- JSON/CSV-based object loading
-- Scene management
-- Improved physics system
-- Better component initialization patterns
-- Enhanced error handling
-- Asset loading error recovery
