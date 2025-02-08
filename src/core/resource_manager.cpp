@@ -272,8 +272,7 @@ bool ResourceManager::InitSounds() {
     const int soundCount = sizeof(GAME_SOUNDS) / sizeof(GAME_SOUNDS[0]);
     for (int i = 0; i < soundCount; i++) {
         if (!LoadSound(GAME_SOUNDS[i].path, GAME_SOUNDS[i].id)) {
-            printf("Failed to load sound: %s\n", GAME_SOUNDS[i].path);
-            return false;
+            printf("Warning: Failed to load sound: %s\n", GAME_SOUNDS[i].path);
         }
     }
     return true;
