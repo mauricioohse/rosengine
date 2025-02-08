@@ -16,7 +16,7 @@ web/index*
 *.la
 
 #temporarly so I dont feed git a bunch of files
-assets/
+# assets/
 include/SDL2
 # dll/
 
