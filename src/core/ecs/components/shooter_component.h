@@ -5,9 +5,11 @@
 struct ShooterComponent : Component {
     float quillSpeed;        // Speed of fired quills
     float recoilForce;      // Force applied to porcupine when shooting
-    float fireRate;         // Shots per  second
+    float fireRate;         // Shots per second
     float lastShotTime;     // Time tracker for fire rate limiting
     bool canShoot;          // Flag to control shooting ability
+    bool isShooting;        // Flag for shooting animation state
+    float shootingAnimTimer; // Timer for shooting animation duration
     
     void Init(float qSpeed = 500.0f, float rForce = 300.0f, float fRate = 0.2f) {
         quillSpeed = qSpeed;
@@ -15,6 +17,8 @@ struct ShooterComponent : Component {
         fireRate = fRate;
         lastShotTime = 0.0f;
         canShoot = true;
+        isShooting = false;
+        shootingAnimTimer = 0.0f;
     }
     
     void Destroy() override {
@@ -23,5 +27,7 @@ struct ShooterComponent : Component {
         fireRate = 0.0f;
         lastShotTime = 0.0f;
         canShoot = false;
+        isShooting = false;
+        shootingAnimTimer = 0.0f;
     }
 }; 

@@ -34,6 +34,7 @@ enum SoundID {
     SOUND_CHOMP,
     SOUND_VICTORY,
     SOUND_QUILL,
+    SOUND_LOSS,
     SOUND_MAX
 };
 
@@ -151,6 +152,7 @@ static const SoundResource GAME_SOUNDS[] = {
     {"assets/sounds/chomp.wav", SOUND_CHOMP}, // https://freesound.org/people/maugusto_sfx/sounds/521253/
     {"assets/sounds/victory.wav", SOUND_VICTORY}, // https://freesound.org/people/maugusto_sfx/sounds/521253/
     {"assets/sounds/SFX_Arrow_Passby.wav", SOUND_QUILL}, // https://freesound.org/people/maugusto_sfx/sounds/521253/
+    {"assets/sounds/referee_whistle.mp3", SOUND_LOSS}, // https://www.youtube.com/watch?v=62mMeoLTP0I
    
     // Add new sounds here
 };

@@ -47,7 +47,7 @@ void BalloonSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                     continue;
                 }
                 // Skip regular updates if exploding
-                continue;
+                break;
             }
         }
     }
@@ -170,7 +170,13 @@ void BalloonSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                     camera->shakeAmount = 8.0f;   // Medium shake for projectile hits
                     camera->shakeTimer = 0.2f;    // Shorter duration
                 }
-                
+
+                Sound *chomp = ResourceManager::GetSound(SOUND_CHOMP);
+                if (chomp)
+                {
+                    Mix_PlayChannel(-1, chomp->sdlChunk, 0);
+                }
+
                 // Destroy the laser
                 entities->DestroyEntity(entity);
             }
@@ -445,7 +451,7 @@ void BalloonSystem::HandleBalloonCollision(EntityID balloonEntity,
     }
     
     // Destroy the balloon
-    // ExplodeBalloon(balloonEntity, entities);
+    //ExplodeBalloon(balloonEntity, entities);
 }
 
 void ExplodeBalloon(EntityID balloonEntity, EntityManager *entities)
@@ -475,6 +481,12 @@ void ExplodeBalloon(EntityID balloonEntity, EntityManager *entities)
             sprite->texture = ResourceManager::GetTexture(TEXTURE_BALLOON_BLUE_EXPLODE);
             break;
         }
+    }
+
+        // Play hit sound
+    Sound* hitSound = ResourceManager::GetSound(SOUND_HIT);
+    if (hitSound) {
+        Mix_PlayChannel(-1, hitSound->sdlChunk, 0);
     }
 }
 

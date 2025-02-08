@@ -17,7 +17,7 @@ web/index*
 
 #temporarly so I dont feed git a bunch of files
 assets/
-include/
+include/SDL2
 # dll/
 
 # Executables

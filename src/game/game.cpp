@@ -58,7 +58,7 @@ bool Game::Init() {
     
     Texture* squirrelTexture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_LEFT);    
     // Add basic components
-    ADD_TRANSFORM(squirrelEntity, 1200.0f, 100.0f, 0.0f, 1.0f);  // Center-top of screen
+    ADD_TRANSFORM(squirrelEntity, 1500.0f, 1500.0f, 0.0f, 1.0f);  // Center-top of screen
     ADD_PHYSICS(squirrelEntity, 50, 2, 1,  750.0f);
     ADD_SPRITE(squirrelEntity, squirrelTexture);
     ADD_WASD_CONTROLLER(squirrelEntity, 600, 1);
@@ -107,13 +107,10 @@ void Game::HandleInput(){
 
     // Check for game start inputs when in start state
     if (gameState == GAME_STATE_START) {
-        if (Input::IsKeyPressed(SDL_SCANCODE_W) || 
-            Input::IsKeyPressed(SDL_SCANCODE_A) || 
-            Input::IsKeyPressed(SDL_SCANCODE_S) || 
-            Input::IsKeyPressed(SDL_SCANCODE_D) || 
-            Input::IsKeyPressed(SDL_SCANCODE_SPACE) ||
-            Input::mouseButtonsPressed[0]) {
-            
+        if (Input::IsKeyPressed(SDL_SCANCODE_SPACE) ||
+            Input::mouseButtonsPressed[0])
+        {
+
             gameState = GAME_STATE_PLAYING;
             return;
         }
@@ -170,6 +167,14 @@ void Game::Update(float deltaTime) {
 
 
             Reset();
+
+            // Play lose sound at reduced volume
+            Sound *loseSound = ResourceManager::GetSound(SOUND_LOSS);
+            if (loseSound)
+            {
+                Mix_VolumeChunk(loseSound->sdlChunk, MIX_MAX_VOLUME / 4); // Set to 25% volume
+                Mix_PlayChannel(-1, loseSound->sdlChunk, 0);
+            }
         }
     }
 
@@ -189,6 +194,8 @@ void Game::Update(float deltaTime) {
         (SpriteComponent*)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_SPRITE);
     PhysicsComponent* physics = 
         (PhysicsComponent*)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_PHYSICS);
+ShooterComponent* shooter = 
+    (ShooterComponent*)g_Engine.componentArrays.GetComponentData(squirrelEntity, COMPONENT_SHOOTER);
 
     if (controller && sprite && physics) {
                 
@@ -203,6 +210,18 @@ void Game::Update(float deltaTime) {
             // Hit animations
             sprite->texture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_IS_HIT);
             g_Porcuopine_hit_anim_timer -= deltaTime;
+        }
+        else if (shooter->isShooting)
+        {
+            // Show shooting animation
+            if (controller->moveX >= 0)
+            {
+                sprite->texture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_RIGHT_LAUNCH);
+            }
+            else
+            {
+                sprite->texture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_LEFT_LAUNCH);
+            }
         }
         else
         {
@@ -253,7 +272,7 @@ void Game::RenderUpgradeUI(){
     if (waveSystem.IsAwaitingUpgradeChoice()) {
         Font* font = ResourceManager::GetFont(fpsFontID);
         if (font) {
-            SDL_Color titleColor = {255, 255, 255, 255};  // White
+            SDL_Color titleColor = {64, 64, 64, 255};  
             SDL_Color upgradeColor = {150, 255, 150, 255}; // Light green
             SDL_Color difficultyColor = {255, 150, 150, 255}; // Light red
             
@@ -265,7 +284,7 @@ void Game::RenderUpgradeUI(){
                 if (titleTexture) {
                     SDL_Rect titleRect = {
                         (WINDOW_WIDTH - (titleSurface->w * 2)) / 2,  // Center horizontally, accounting for 2x scale
-                        150,  // Top position
+                        130,  // Top position
                         titleSurface->w * 2,  // Double the width
                         titleSurface->h * 2   // Double the height
                     };
@@ -273,6 +292,24 @@ void Game::RenderUpgradeUI(){
                     SDL_DestroyTexture(titleTexture);
                 }
                 SDL_FreeSurface(titleSurface);
+            }
+
+            // Draw instruction text
+            const char* instructionText = "use 1, 2, 3 to select";
+            SDL_Surface* instructionSurface = TTF_RenderText_Solid(font->sdlFont, instructionText, titleColor);
+            if (instructionSurface) {
+                SDL_Texture* instructionTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, instructionSurface);
+                if (instructionTexture) {
+                    SDL_Rect instructionRect = {
+                        (WINDOW_WIDTH - instructionSurface->w) / 2,  // Center horizontally (no scaling)
+                        130 + titleSurface->h * 2 + 10,  // Below title with 10px gap
+                        instructionSurface->w,  // Normal size
+                        instructionSurface->h
+                    };
+                    SDL_RenderCopy(g_Engine.window->renderer, instructionTexture, NULL, &instructionRect);
+                    SDL_DestroyTexture(instructionTexture);
+                }
+                SDL_FreeSurface(instructionSurface);
             }
 
             // Get upgrade choices
@@ -302,8 +339,10 @@ void Game::RenderUpgradeUI(){
                 SDL_RenderFillRect(g_Engine.window->renderer, &boxRect);
                 
                 // Draw selection number
-                char numText[2] = {'1' + i, '\0'};
-                SDL_Surface* numSurface = TTF_RenderText_Solid(font->sdlFont, numText, titleColor);
+                char numText[2];
+                numText[0] = '1' + i;
+                numText[1] = '\0';
+                SDL_Surface* numSurface = TTF_RenderText_Solid(font->sdlFont, numText, {255, 255, 255, 255});
                 if (numSurface) {
                     SDL_Texture* numTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, numSurface);
                     if (numTexture) {
@@ -329,7 +368,7 @@ void Game::RenderUpgradeUI(){
                 char difficultyLine1[64];
                 char difficultyLine2[64];
                 char difficultyLine3[64];
-                const int MAX_LINE_LENGTH = 30;  // Maximum characters per line
+                const int MAX_LINE_LENGTH = 24;  // Maximum characters per line
 
                 snprintf(difficultyLine1, sizeof(difficultyLine1), "%s", choices[i].difficulty.name);
 
@@ -357,9 +396,9 @@ void Game::RenderUpgradeUI(){
                     difficultyLine3[0] = '\0';
                 }
 
-                // Add multiplier value to the last line
+                // // Add multiplier value to the last line
                 char multiplierText[16];
-                snprintf(multiplierText, sizeof(multiplierText), " (%.2fx)", choices[i].difficulty.value);
+                snprintf(multiplierText, sizeof(multiplierText), " ", choices[i].difficulty.value);
                 strncat(difficultyLine3, multiplierText, sizeof(difficultyLine3) - strlen(difficultyLine3) - 1);
                 
                 SDL_Surface* diffSurface1 = TTF_RenderText_Solid(font->sdlFont, difficultyLine1, difficultyColor);
@@ -452,7 +491,7 @@ void Game::Render() {
     SDL_SetRenderDrawColor(g_Engine.window->renderer, 255, 0, 0, 128);  // Semi-transparent red
     
     // Loop through all entities with colliders
-    if (DEBUG_COLLISION) // can be disabled by changing here
+#ifdef DEBUG
     for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
         if (g_Engine.entityManager.HasComponent(entity, COMPONENT_COLLIDER | COMPONENT_TRANSFORM)) {
             TransformComponent* transform = 
@@ -483,6 +522,7 @@ void Game::Render() {
             }
         }
     }
+#endif // DEBUG
 
     // Draw damage percentage
     PhysicsComponent* porcupinePhysics = 
@@ -528,16 +568,16 @@ void Game::Render() {
     // Draw score, combo and wave number
     Font* font = ResourceManager::GetFont(fpsFontID);
     if (font) {
-        SDL_Color textColor = {255, 255, 255, 255};  // Default white color
+        SDL_Color textColor = {64, 64, 64, 255};  // Default white color
         
         // Create score and wave text
         char scoreText[128];
         char comboText[32] = "";  // New separate text for combo
         
         // Format wave and score text
-        snprintf(scoreText, sizeof(scoreText), "Score: %d - Wave %d-%d", 
+        snprintf(scoreText, sizeof(scoreText), "Score: %d - Wave %d", 
                 currentScore, 
-                waveSystem.currentCycle + 1, waveSystem.currentWave );
+                waveSystem.currentWave );
         
         // Create text surface for score and wave
         SDL_Surface* textSurface = TTF_RenderText_Solid(font->sdlFont, scoreText, textColor);
@@ -603,19 +643,22 @@ void Game::Render() {
     if (gameState == GAME_STATE_START) {
         Font* font = ResourceManager::GetFont(fpsFontID);
         if (font) {
-            SDL_Color textColor = {255, 255, 255, 255};
+            SDL_Color textColor = {64, 64, 64, 255};
             
             const char* controls[] = {
                 "WASD for movement",
                 "Left click to shoot quills",
-                "",
                 bestScore > 0 ? "Best Score: %d" : "",
                 "",
-                "Press any key to start"
+                "",
+                "",
+                "1,2,3 to select upgrades",
+                "ESC to pause, R to restart",
+                "Press space key to start"
             };
             
             // Render each line of text
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 9; i++) {
                 char lineBuffer[64];
                 if (i == 3 && bestScore > 0) {
                     snprintf(lineBuffer, sizeof(lineBuffer), controls[i], bestScore);
@@ -631,7 +674,7 @@ void Game::Render() {
                         destRect.w = textSurface->w;
                         destRect.h = textSurface->h;
                         destRect.x = (WINDOW_WIDTH - destRect.w) / 2;
-                        destRect.y = (WINDOW_HEIGHT / 2) - (120 - i * 40);
+                        destRect.y = (WINDOW_HEIGHT / 2) - (120 - i * 40) - 20;
                         
                         SDL_RenderCopy(g_Engine.window->renderer, textTexture, NULL, &destRect);
                         SDL_DestroyTexture(textTexture);
@@ -740,7 +783,7 @@ void Game::Render() {
     if (gameState == GAME_STATE_PAUSED && !waveSystem.IsAwaitingUpgradeChoice()) {
         Font* font = ResourceManager::GetFont(fpsFontID);
         if (font) {
-            SDL_Color textColor = {255, 255, 255, 255};
+            SDL_Color textColor = {64, 64, 64, 255};
             
             // Create semi-transparent dark overlay
             SDL_SetRenderDrawBlendMode(g_Engine.window->renderer, SDL_BLENDMODE_BLEND);

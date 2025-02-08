@@ -47,12 +47,17 @@ void WaveSystem::Update(float deltaTime, EntityManager* entities, ComponentArray
     }
 
     // Check if wave is complete
-    if (NoBalloonsRemaining(entities)) {
+    if (NoBalloonsRemaining(entities) && currentWave%2 == 1) {
         currentWave++;
         GenerateUpgradeChoices();
         awaitingUpgradeChoice = true;
         once = true;
-
+    }
+    else
+    if (NoBalloonsRemaining(entities) && currentWave%2 == 0)
+    {
+        currentWave++;
+        once = true;
     }
 }
 
@@ -68,7 +73,7 @@ bool WaveSystem::NoBalloonsRemaining(EntityManager* entities) {
 
 int WaveSystem::GetScaledCount(int baseCount, BalloonType type) {
     // Base cycle scaling (50% more per cycle)
-    float multiplier = 1.0f + (currentCycle * 0.5f);
+    float multiplier = 1.0f + (currentWave/5 * 0.5f);
     
     // Apply balloon-specific multipliers
     switch (type) {
@@ -361,8 +366,8 @@ Upgrade WaveSystem::GetUpgradeData(UpgradeType type) {
             
         case UPGRADE_GRIP:
             upgrade.name = "Ice Grip";
-            upgrade.value = 1.30f;   // 30% better grip
-            upgrade.description = "30% better control on ice";
+            upgrade.value = 1.10f;   // 30% better grip
+            upgrade.description = "10%  more grip on ice";
             break;
             
         case UPGRADE_RECOIL_RES:

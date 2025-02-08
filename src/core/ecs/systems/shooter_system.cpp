@@ -29,8 +29,12 @@ void ShooterSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                 (ShooterComponent*)components->GetComponentData(entity, COMPONENT_SHOOTER);
             PhysicsComponent* physics = 
                 (PhysicsComponent*)components->GetComponentData(entity, COMPONENT_PHYSICS);
+            SpriteComponent* sprite =
+                (SpriteComponent*)components->GetComponentData(entity, COMPONENT_SPRITE);
+            WASDControllerComponent* controller =
+                (WASDControllerComponent*)components->GetComponentData(entity, COMPONENT_WASD_CONTROLLER);
             
-            if (!transform || !shooter || !physics || !shooter->canShoot) {
+            if (!transform || !shooter || !physics || !sprite || !controller || !shooter->canShoot) {
                 continue;
             }
 
@@ -47,7 +51,12 @@ void ShooterSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                     if (length > 0) {
                         dirX /= length;
                         dirY /= length;
+
+                        // Set shooting animation state
+                        shooter->isShooting = true;
+                        shooter->shootingAnimTimer = 0.2f; // 200ms animation duration
                         
+
                         // Spawn main quill
                         SpawnQuill(entities, components, transform->x, transform->y, 
                                  dirX, dirY, shooter->quillSpeed, entity);
@@ -61,14 +70,18 @@ void ShooterSystem::Update(float deltaTime, EntityManager* entities, ComponentAr
                             physics->velocityX -= dirX * shooter->recoilForce*.8;
                             physics->velocityY -= dirY * shooter->recoilForce*.8;
                         }
-
-                        printf("shooter entity %d mouse (%d, %d) screen center (%d, %d) force (%f,%f) \n", 
-                        entity, mouseX, mouseY, screenCenterX, screenCenterY,
-                        dirX * shooter->recoilForce, dirY * shooter->recoilForce);
                         
                         // Update last shot time
                         shooter->lastShotTime = currentTime;
                     }
+                }
+            } 
+
+            // Update shooting animation timer
+            if (shooter->shootingAnimTimer > 0) {
+                shooter->shootingAnimTimer -= deltaTime;
+                if (shooter->shootingAnimTimer <= 0) {
+                    shooter->isShooting = false;
                 }
             }
         }
