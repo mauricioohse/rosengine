@@ -1,5 +1,6 @@
 # RoseNgine future improvements
 
+- [ ] finish converting all components to xcomponent() format
 - [ ] create JSON/CSV-based object loading
     > there should be a way to easily load batches of entities from json or CSV files for creating levels/scenes
 - [ ] loading tilemap from txt file and tiles from tilemap
