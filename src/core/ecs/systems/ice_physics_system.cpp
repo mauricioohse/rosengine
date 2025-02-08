@@ -1,5 +1,5 @@
 #include "ice_physics_system.h"
-#include "../../src/game/game.h"
+#include "game/game.h"
 #include <math.h>
 
 void IcePhysicsSystem::Init() {
