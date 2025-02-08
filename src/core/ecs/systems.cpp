@@ -1,5 +1,5 @@
 #include "systems.h"
-#include "../../src/game/game.h"
+#include "game/game.h"
 #include <stdio.h>
 
 void SystemManager::Init() {
