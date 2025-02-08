@@ -1,4 +1,4 @@
-# RoseN - C/C++ SDL2 game engine
+# RoseN - C/C++ SDL2 Game Engine
 
 ## Introduction
 
@@ -11,6 +11,47 @@ RoseN (Shorthand for RoseNgine) is a simple code-only game engine created for sm
 - Emscripten: Download and install [Emscripten](https://emscripten.org/docs/getting_started/downloads.html) for web builds
 - Make: Install Make for Windows from [GnuWin32](http://gnuwin32.sourceforge.net/packages/make.htm) or use the Make that comes with MinGW
 
-## Compiling
+### macOS
 
-use "make" to see the options. Supports build for debug and release on windows, and release for web.
+1. Install Homebrew (if not already installed):
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+2. Install required dependencies:
+
+```bash
+brew install sdl2
+brew install sdl2_image
+brew install sdl2_ttf
+brew install sdl2_mixer
+```
+
+3. Install Clang (usually comes with Xcode Command Line Tools):
+
+```bash
+xcode-select --install
+```
+
+## Building
+
+Run `make` to see build options:
+
+- `make` - Windows builds
+- `make -f Makefile-mac` - macOS builds
+- `make web` - Web build (requires Emscripten)
+
+## Running the Game
+
+Run the debug version:
+
+```bash
+./bin/debug/rosengine
+```
+
+Or run the release version:
+
+```bash
+./bin/release/rosengine
+```

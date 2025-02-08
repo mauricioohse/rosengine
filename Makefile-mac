@@ -1,0 +1,81 @@
+# Common variables
+CXX = clang++
+CXX_WEB = emcc
+CXXFLAGS = -Wall -MD -MP -std=c++11
+INCLUDES = -I/opt/homebrew/include/SDL2 -I./src
+
+# Source files
+SOURCES = $(wildcard src/*.cpp) $(wildcard src/core/*.cpp) $(wildcard src/core/ecs/*.cpp) $(wildcard src/core/ecs/components/*.cpp) $(wildcard src/core/ecs/systems/*.cpp) $(wildcard src/game/*.cpp)
+BUILD_DIR = bin
+
+# Output targets
+DEBUG_DIR = $(BUILD_DIR)/debug
+RELEASE_DIR = $(BUILD_DIR)/release
+DEBUG_TARGET = $(DEBUG_DIR)/rosengine
+RELEASE_TARGET = $(RELEASE_DIR)/rosengine
+WEB_TARGET = web/index.html
+
+# Object files
+OBJECTS_DEBUG = $(SOURCES:src/%.cpp=$(DEBUG_DIR)/%.o)
+OBJECTS_RELEASE = $(SOURCES:src/%.cpp=$(RELEASE_DIR)/%.o)
+
+# Create necessary directories for object files
+$(shell mkdir -p $(DEBUG_DIR)/core $(DEBUG_DIR)/game $(RELEASE_DIR)/core $(RELEASE_DIR)/game)
+
+# Debug-specific
+DEBUG_FLAGS = -g -DDEBUG
+DEBUG_LIBS = -L/opt/homebrew/lib -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+
+# Release-specific
+RELEASE_FLAGS = -O2 -DNDEBUG
+RELEASE_LIBS = -L/opt/homebrew/lib -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+
+# Debug build rules
+$(DEBUG_DIR)/%.o: src/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(DEBUG_FLAGS) $(INCLUDES) -c $< -o $@
+
+# Include dependency files
+-include $(OBJECTS_DEBUG:.o=.d)
+
+$(DEBUG_TARGET): $(OBJECTS_DEBUG)
+	$(CXX) $(OBJECTS_DEBUG) $(DEBUG_FLAGS) $(DEBUG_LIBS) -o $(DEBUG_TARGET)
+
+debug: $(DEBUG_TARGET) copy_assets_debug
+	@echo "Debug build complete: $(DEBUG_TARGET)"
+
+# Release build rules
+$(RELEASE_DIR)/%.o: src/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(RELEASE_FLAGS) $(INCLUDES) -c $< -o $@
+
+$(RELEASE_TARGET): $(OBJECTS_RELEASE)
+	$(CXX) $(OBJECTS_RELEASE) $(RELEASE_FLAGS) $(RELEASE_LIBS) -o $(RELEASE_TARGET)
+
+release: $(RELEASE_TARGET) copy_assets_release
+	@echo "Release build complete: $(RELEASE_TARGET)"
+
+copy_assets_debug:
+	@echo "Copying assets to debug directory..."
+	@rm -rf $(DEBUG_DIR)/assets
+	@cp -r assets $(DEBUG_DIR)/
+
+copy_assets_release:
+	@echo "Copying assets to release directory..."
+	@rm -rf $(RELEASE_DIR)/assets
+	@cp -r assets $(RELEASE_DIR)/
+
+clean:
+	rm -rf $(DEBUG_DIR)/* $(RELEASE_DIR)/* web/*.js web/*.wasm web/*.data
+
+.PHONY: debug release clean copy_assets_debug copy_assets_release
+
+# Default target
+help:
+	@echo "Please specify a target: debug or release"
+	@echo "Usage:"
+	@echo "  make debug   - Build debug version"
+	@echo "  make release - Build release version"
+	@echo "  make clean   - Clean all builds"
+
+.DEFAULT_GOAL := help
