@@ -5,6 +5,9 @@
 - [ ] loading tilemap from txt file and tiles from tilemap
 - [ ] Scene management
     > currently no scene management in place
+- [ ] Discuss header archtecture
+    > current clean build takes several seconds
+    > changes in components or systems due to header inclusions make recompile almost all components and systems
 - [ ] main menu
     > need to think on archtecture changes for this. Scene management should be done first.
 - [ ] Create archtecture changes in systems for pausing
