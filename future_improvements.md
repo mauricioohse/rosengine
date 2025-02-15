@@ -25,7 +25,6 @@
 - [ ] Discuss current ECS archtecture
   - [ ] create component 2d array instead of single components (how xcomponent() is doing now)
   - [ ] create auxiliary functions to get entities with certain components list only once insted of every system going through all entities everytime
-- [ ] not found asset -> load purple square instead of quitting
 - [ ] Enhance component init macro -
     > current component init macros cant take default values (current automatic generated macro requires explicit setting of all arguments, see xcomponent())
     > option can simply be add a wrapper macro, but where would that go? there should be a more sofisticated solution

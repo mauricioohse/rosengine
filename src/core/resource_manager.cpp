@@ -12,26 +12,44 @@ void ResourceManager::Cleanup() {
     Mix_CloseAudio();
 }
 
+SDL_Surface *ResourceManager::MakeMissingTexture()
+{
+    const int w = 100;
+    const int h = 100;
+    SDL_Surface *fb = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
+    SDL_Rect rect = {0, 0, w / 2, h / 2};
+    SDL_FillRect(fb, &rect, SDL_MapRGB(fb->format, 128, 0, 128));
+    rect.x = w / 2;
+    rect.y = 0;
+    rect.w = w / 2;
+    rect.h = h / 2;
+    SDL_FillRect(fb, &rect, SDL_MapRGB(fb->format, 0, 0, 0));
+    rect.x = 0;
+    rect.y = h / 2;
+    rect.w = w / 2;
+    rect.h = h / 2;
+    SDL_FillRect(fb, &rect, SDL_MapRGB(fb->format, 0, 0, 0));
+    rect.x = w / 2;
+    rect.y = h / 2;
+    rect.w = w / 2;
+    rect.h = h / 2;
+    SDL_FillRect(fb, &rect, SDL_MapRGB(fb->format, 128, 0, 128));
+    return fb;
+}
+
 Texture* ResourceManager::LoadTexture(const char* path) {
     SDL_Surface* surface = IMG_Load(path);
     if (!surface) {
-        printf("Failed to load image %s! SDL_image Error: %s\n", path, IMG_GetError());
-        return nullptr;
+        printf("Failed to load texture: %s! Replacing with missing texture.\n", path);
+        surface = MakeMissingTexture();
     }
-    
-    SDL_Texture* sdlTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, surface);
-    if (!sdlTexture) {
-        printf("Failed to create texture from %s! SDL Error: %s\n", path, SDL_GetError());
-        SDL_FreeSurface(surface);
+    SDL_Texture *sdlTexture = SDL_CreateTextureFromSurface(g_Engine.window->renderer, surface);
+    SDL_FreeSurface(surface);
+    if (!sdlTexture)
         return nullptr;
-    }
-    
     Texture* texture = new Texture();
     texture->sdlTexture = sdlTexture;
-    texture->width = surface->w;
-    texture->height = surface->h;
-    
-    SDL_FreeSurface(surface);
+    SDL_QueryTexture(sdlTexture, NULL, NULL, &texture->width, &texture->height);
     return texture;
 }
 
@@ -272,8 +290,7 @@ bool ResourceManager::InitSounds() {
     const int soundCount = sizeof(GAME_SOUNDS) / sizeof(GAME_SOUNDS[0]);
     for (int i = 0; i < soundCount; i++) {
         if (!LoadSound(GAME_SOUNDS[i].path, GAME_SOUNDS[i].id)) {
-            printf("Failed to load sound: %s\n", GAME_SOUNDS[i].path);
-            return false;
+            printf("Warning: Failed to load sound: %s\n", GAME_SOUNDS[i].path);
         }
     }
     return true;

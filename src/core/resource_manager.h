@@ -214,4 +214,5 @@ private:
     static bool InitTextures();
     static bool InitSounds();
     static bool InitFonts();
+    static SDL_Surface *MakeMissingTexture();
 }; 
