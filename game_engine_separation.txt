@@ -1,0 +1,110 @@
+============================================
+Game Engine Separation Plan (Phased Approach)
+============================================
+PHASE 0 - PREPARATION
+---------------------
+Estimated Time: 1 hour
+Tasks:
+1. Create docs/engine_separation_plan.txt
+2. Make full project backup (git commit recommended)
+3. Identify game-specific systems/components:
+PeanutSystem
+BalloonSystem
+WaveSystem
+SquirrelPhysicsSystem
+ShooterSystem
+MILESTONE 1 - FOLDER RESTRUCTURING
+----------------------------------
+New Structure:
+rosengine/
+src/
+core/ # Engine fundamentals
+game/ # Active game
+systems/ # Game systems
+components/ # Game components
+common/ # Shared utilities
+Tasks:
+1. Create new directories
+2. Move game systems to game/systems/
+3. Move game components to game/components/
+4. Update include paths
+5. Modify Makefile paths
+Test compilation
+Key Makefile Changes:
+ENGINE_SRCS := $(wildcard src/core//.cpp)
+GAME_SRCS := $(wildcard src/game//.cpp)
+SOURCES := $(ENGINE_SRCS) $(GAME_SRCS)
+MILESTONE 2 - RESOURCE MANAGEMENT
+---------------------------------
+Tasks:
+Create game_config.json:
+{
+"textures": [
+{"id": "TEXTURE_PEANUT", "path": "assets/peanut.png"}
+],
+"sounds": [
+{"id": "SOUND_POP", "path": "assets/pop.wav"}
+]
+}
+2. Modify ResourceManager to use config
+3. Move game-specific enums to game headers
+MILESTONE 3 - COMPONENT REGISTRATION
+------------------------------------
+Implementation Steps:
+// core/ecs/component_registry.h
+class ComponentRegistry {
+public:
+template<typename T>
+void RegisterComponent(ComponentType type) {
+factories[type] = { return new T(); };
+}
+Component CreateComponent(ComponentType type) {
+return factoriestype;
+}
+private:
+std::unordered_map<ComponentType, std::function<Component()>> factories;
+};
+MILESTONE 4 - SYSTEM DEPENDENCIES
+---------------------------------
+GameInterface Implementation:
+// core/game_interface.h
+class GameInterface {
+public:
+virtual void RegisterSystems(SystemManager& systems) = 0;
+virtual void RegisterComponents(ComponentRegistry& registry) = 0;
+virtual void InitializeGameSpecifics() = 0;
+};
+MILESTONE 5 - FULL DECOUPLING
+-----------------------------
+Build Process:
+Create engine static library
+Build command for games:
+g++ game_main.cpp -L. -lroseengine -o my_game
+POST-DECOUPLING MAINTENANCE
+---------------------------
+1. Write API documentation
+2. Implement semantic versioning
+3. Set up CI/CD pipelines
+4. Create engine test suite
+KEY CONSIDERATIONS
+------------------
+1. Maintain compatibility during transition
+2. Test after each separation step
+3. Keep engine/game assets separate
+4. Manage build configurations carefully
+IMPLEMENTATION ADVICE
+---------------------
+"Separate as you go" - Only decouple when modifying systems
+Keep current game playable throughout process
+Prioritize critical path components first
+Maintain clear version control history
+TIMELINE ESTIMATE
+-----------------
+| Phase | Duration | Priority |
+|-------------|----------|----------|
+| Preparation | 1-2 hrs | High |
+| Restructure | 4-6 hrs | High |
+| Resources | 8-10 hrs | Medium |
+| Components | 12-14 hrs| High |
+| Systems | 8-10 hrs | Medium |
+| Final Decoup| 16-20 hrs| Low |
