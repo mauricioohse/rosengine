@@ -1,19 +1,12 @@
 #pragma once
 #include "ecs_types.h"
 #include "../resource_manager.h"
-#include "components/squirrel_components.h"
 #include "string.h"
 #include "stdio.h"
 #include "base_component.h"
 #include <float.h>
-#include "components/cloud_components.h"
 #include "components/background_component.h"
-#include "components/peanut_components.h"
-#include "components/physics_component.h"
-#include "components/shooter_component.h"
-#include "components/quill_component.h"
-#include "components/balloon_component.h"
-#include "components/projectile_component.h"
+
 
 // Add camera constants
 #define CAMERA_FOLLOW_SPEED 15.0f     // How fast camera catches up to target
@@ -253,8 +246,7 @@ void InitGravity(EntityID entity, float scale = 1.0f);
 void InitSquirrel(EntityID entity);
 void InitSquirrelPhysics(EntityID entity);
 void InitCamera(EntityID entity, float width, float height, EntityID target = 0);
-void InitCloud(EntityID entity, CloudType type, CloudSize cloudSize);
-void InitPeanut(EntityID entity, PeanutType type);
+
 
 struct ComponentArrays {
     // Component data pools
@@ -265,11 +257,8 @@ struct ComponentArrays {
     ColliderComponent colliders[MAX_ENTITIES];
     AnimationComponent animations[MAX_ENTITIES];
     GravityComponent gravities[MAX_ENTITIES];
-    SquirrelComponent squirrelComponents[MAX_ENTITIES];
     CameraComponent cameras[MAX_ENTITIES];
-    CloudComponent clouds[MAX_ENTITIES];
     BackgroundComponent backgrounds[MAX_ENTITIES];
-    PeanutComponent peanuts[MAX_ENTITIES];
 
     // Core functions
     void* GetComponentData(EntityID entity, ComponentType type);
