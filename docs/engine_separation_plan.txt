@@ -1,32 +1,26 @@
 ============================================
 Game Engine Separation Plan (Phased Approach)
 ============================================
-PHASE 0 - PREPARATION
+PHASE 0 - CLEANUP AND PREPARATION
 ---------------------
 Estimated Time: 1 hour
 Tasks:
-1. Create docs/engine_separation_plan.txt
-2. Make full project backup (git commit recommended)
-3. Identify game-specific systems/components:
-PeanutSystem
-BalloonSystem
-WaveSystem
-SquirrelPhysicsSystem
-ShooterSystem
+1. delete all game specific systems
+2. delete all game specifics inits in game.cpp
+3. delete all game specifics components
+
+---------------------------------
 MILESTONE 1 - FOLDER RESTRUCTURING
 ----------------------------------
-New Structure:
-rosengine/
-src/
+New Structure
 core/ # Engine fundamentals
-game/ # Active game
-systems/ # Game systems
-components/ # Game components
-common/ # Shared utilities
+game1/ # Active game
+|--game_systems/ # Game systems
+|--game_components/ # Game components
 Tasks:
 1. Create new directories
-2. Move game systems to game/systems/
-3. Move game components to game/components/
+2. create example game system (a system that shows the game name in the center of the screen)
+3. crete example component (player_component)
 4. Update include paths
 5. Modify Makefile paths
 Test compilation
@@ -34,77 +28,15 @@ Key Makefile Changes:
 ENGINE_SRCS := $(wildcard src/core//.cpp)
 GAME_SRCS := $(wildcard src/game//.cpp)
 SOURCES := $(ENGINE_SRCS) $(GAME_SRCS)
+
+---------------------------------
 MILESTONE 2 - RESOURCE MANAGEMENT
 ---------------------------------
-Tasks:
-Create game_config.json:
-{
-"textures": [
-{"id": "TEXTURE_PEANUT", "path": "assets/peanut.png"}
-],
-"sounds": [
-{"id": "SOUND_POP", "path": "assets/pop.wav"}
-]
-}
-2. Modify ResourceManager to use config
-3. Move game-specific enums to game headers
-MILESTONE 3 - COMPONENT REGISTRATION
-------------------------------------
-Implementation Steps:
-// core/ecs/component_registry.h
-class ComponentRegistry {
-public:
-template<typename T>
-void RegisterComponent(ComponentType type) {
-factories[type] = { return new T(); };
-}
-Component CreateComponent(ComponentType type) {
-return factoriestype;
-}
-private:
-std::unordered_map<ComponentType, std::function<Component()>> factories;
-};
-MILESTONE 4 - SYSTEM DEPENDENCIES
----------------------------------
-GameInterface Implementation:
-// core/game_interface.h
-class GameInterface {
-public:
-virtual void RegisterSystems(SystemManager& systems) = 0;
-virtual void RegisterComponents(ComponentRegistry& registry) = 0;
-virtual void InitializeGameSpecifics() = 0;
-};
-MILESTONE 5 - FULL DECOUPLING
------------------------------
-Build Process:
-Create engine static library
-Build command for games:
-g++ game_main.cpp -L. -lroseengine -o my_game
-POST-DECOUPLING MAINTENANCE
----------------------------
-1. Write API documentation
-2. Implement semantic versioning
-3. Set up CI/CD pipelines
-4. Create engine test suite
-KEY CONSIDERATIONS
-------------------
-1. Maintain compatibility during transition
-2. Test after each separation step
-3. Keep engine/game assets separate
-4. Manage build configurations carefully
-IMPLEMENTATION ADVICE
----------------------
-"Separate as you go" - Only decouple when modifying systems
-Keep current game playable throughout process
-Prioritize critical path components first
-Maintain clear version control history
-TIMELINE ESTIMATE
------------------
-| Phase | Duration | Priority |
-|-------------|----------|----------|
-| Preparation | 1-2 hrs | High |
-| Restructure | 4-6 hrs | High |
-| Resources | 8-10 hrs | Medium |
-| Components | 12-14 hrs| High |
-| Systems | 8-10 hrs | Medium |
-| Final Decoup| 16-20 hrs| Low |
+The resource initialziation should be done in the game folder, since the resources are game specific.
+
+1. create game/assets/ folder
+2. call the loading of resources on game init. create a function "load_game_resources()"
+3. remove the core/ initialization of game resources.
+4. update make files, if needed
+
+
