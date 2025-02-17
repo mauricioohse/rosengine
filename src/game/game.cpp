@@ -21,6 +21,7 @@ bool Game::Init() {
     ADD_SPRITE(backgroundEntity, backgroundTexture);
     ADD_BACKGROUND(backgroundEntity, 0.5f);  // 0.5 parallax factor for medium depth
 
+    g_Engine.systemManager.RegisterSystem(new game_name_system());
 
     // Create squirrel entity
     squirrelEntity = g_Engine.entityManager.CreateEntity();

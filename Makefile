@@ -2,10 +2,10 @@
 CXX_WINDOWS = g++
 CXX_WEB = emcc
 CXXFLAGS = -Wall -MD -MP
-INCLUDES = -I./include/SDL2 -I./src
+INCLUDES = -I./include/SDL2 -I./src -I./src/game/game_systems
 
 # Source files - now includes all cpp files in src and subdirectories
-SOURCES = $(wildcard src/*.cpp) $(wildcard src/core/*.cpp) $(wildcard src/core/ecs/*.cpp) $(wildcard src/core/ecs/components/*.cpp) $(wildcard src/core/ecs/systems/*.cpp) $(wildcard src/game/*.cpp)
+SOURCES = $(wildcard src/*.cpp) $(wildcard src/core/*.cpp) $(wildcard src/core/ecs/*.cpp) $(wildcard src/core/ecs/components/*.cpp) $(wildcard src/core/ecs/systems/*.cpp) $(wildcard src/game/*.cpp) $(wildcard src/game/game_systems/*.cpp)
 BUILD_DIR = bin
 WEB_DIR = web
 

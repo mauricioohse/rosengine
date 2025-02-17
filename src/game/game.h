@@ -8,6 +8,7 @@
 #include "../core/ecs/systems/background_system.h"
 #include "../core/ecs/systems/music_system.h"
 #include "../core/ecs/component_macros.h"
+#include "game_systems/game_name_system.h"
 
 // Add new game state
 enum GameState {
