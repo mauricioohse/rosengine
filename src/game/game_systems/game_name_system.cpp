@@ -3,10 +3,9 @@
 #include "../../core/resource_manager.h"
 
 void game_name_system::Init() {
-    // Create text entity once during initialization
+    // for testing purposes, creating a small text with game title
     titleEntity = g_Engine.entityManager.CreateEntity();
     
-    // Add required components
     ADD_TRANSFORM(titleEntity,400,300,0,0);
     ADD_SPRITE(titleEntity, ResourceManager::GetTextTexture(ResourceManager::GetFont(FONT_FPS), "game title!",  {255, 215, 0}));
 }

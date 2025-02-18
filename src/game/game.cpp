@@ -8,10 +8,7 @@
 Game g_Game;
 
 bool Game::Init() {
-    g_Engine.systemManager.RegisterSystem(&renderSystem);
-    g_Engine.systemManager.RegisterSystem(&cameraSystem);
-    g_Engine.systemManager.RegisterSystem(&collisionSystem);
-    g_Engine.systemManager.RegisterSystem(&musicSystem);
+    g_Engine.systemManager.RegisterSystem(new RenderSystem());
     g_Engine.systemManager.RegisterSystem(new WASDControllerSystem());
 
     // Create background
@@ -24,14 +21,14 @@ bool Game::Init() {
     g_Engine.systemManager.RegisterSystem(new game_name_system());
 
     // Create squirrel entity
-    squirrelEntity = g_Engine.entityManager.CreateEntity();
+    playerEntity = g_Engine.entityManager.CreateEntity();
     
-    Texture* squirrelTexture = ResourceManager::GetTexture(TEXTURE_PORCUPINE_LEFT);    
+    Texture* playerTex = ResourceManager::GetTexture(TEXTURE_PORCUPINE_LEFT);    
     // Add basic components
-    ADD_TRANSFORM(squirrelEntity, 200.0f, 200.0f, 0.0f, 1.0f);  // Center-top of screen
-    ADD_SPRITE(squirrelEntity, squirrelTexture);
-    ADD_WASD_CONTROLLER(squirrelEntity, 600, 1);
-    ADD_COLLIDER(squirrelEntity, 32, 32, 0, 0);
+    ADD_TRANSFORM(playerEntity, 200.0f, 200.0f, 0.0f, 1.0f);  // Center-top of screen
+    ADD_SPRITE(playerEntity, playerTex);
+    ADD_WASD_CONTROLLER(playerEntity, 600, 1);
+    ADD_COLLIDER(playerEntity, 32, 32, 0, 0);
     
     return true;
 }

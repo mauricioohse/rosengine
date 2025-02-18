@@ -34,28 +34,8 @@ public:
     void Cleanup();
     void Reset();
 
-
-    
-    EntityID squirrelEntity;
-    EntityID helicopterEntity;
-    EntityID cameraEntity;
-
-    static const int MAX_PEANUT_TARGETS = 100;
-    PeanutTarget peanutTargets[MAX_PEANUT_TARGETS];
-    int numPeanutTargets;
-    EntityID arrowEntity;  // To track the arrow sprite
+    EntityID playerEntity;
     GameState gameState;
-    bool g_Porcupine_is_hit = 0;
-    float g_Porcuopine_hit_anim_timer = 0.0f;
-
-    // Systems
-    RenderSystem renderSystem;
-    WASDControllerSystem wasdSystem;
-    CollisionSystem collisionSystem;
-    CameraSystem cameraSystem;
-    BackgroundSystem backgroundSystem;
-    MusicSystem musicSystem;
-
 
 };
 
