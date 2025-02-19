@@ -5,7 +5,7 @@ CXXFLAGS = -Wall -MD -MP -std=c++11
 INCLUDES = -I/opt/homebrew/include/SDL2 -I./src
 
 # Source files
-SOURCES = $(wildcard src/*.cpp) $(wildcard src/core/*.cpp) $(wildcard src/core/ecs/*.cpp) $(wildcard src/core/ecs/components/*.cpp) $(wildcard src/core/ecs/systems/*.cpp) $(wildcard src/game/*.cpp)
+SOURCES = $(shell find src -name '*.cpp')
 BUILD_DIR = bin
 
 # Output targets
