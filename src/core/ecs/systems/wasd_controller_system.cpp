@@ -11,15 +11,13 @@ void WASDControllerSystem::Update(float deltaTime, EntityManager* entities, Comp
     // Loop through all entities
     for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
         // Check if entity has both transform and WASD controller components
-        if (entities->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_WASD_CONTROLLER | COMPONENT_PHYSICS)) {
+        if (entities->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_WASD_CONTROLLER )) {
             TransformComponent* transform = 
                 (TransformComponent*)components->GetComponentData(entity, COMPONENT_TRANSFORM);
             WASDControllerComponent* controller = 
                 (WASDControllerComponent*)components->GetComponentData(entity, COMPONENT_WASD_CONTROLLER);
-            PhysicsComponent* physics =
-                (PhysicsComponent*)components->GetComponentData(entity, COMPONENT_PHYSICS);
             
-            if (!transform || !controller || !physics || !controller->canMove) {
+            if (!transform || !controller || !controller->canMove) {
                 continue;
             }
 
@@ -29,35 +27,24 @@ void WASDControllerSystem::Update(float deltaTime, EntityManager* entities, Comp
             // Reset movement values
             controller->moveX = 0;
             controller->moveY = 0;
-            
-            // Update movement values based on input
+            // Handle WASD movement
             if (Input::IsKeyDown(SDL_SCANCODE_W)) {
-                physics->velocityY -= moveForce * deltaTime;
+                transform->y -= moveForce * deltaTime;
                 controller->moveY = -1;
             }
             if (Input::IsKeyDown(SDL_SCANCODE_S)) {
-                physics->velocityY += moveForce * deltaTime;
+                transform->y += moveForce * deltaTime;
                 controller->moveY = 1;
             }
             if (Input::IsKeyDown(SDL_SCANCODE_A)) {
-                physics->velocityX -= moveForce * deltaTime;
+                transform->x -= moveForce * deltaTime;
                 controller->moveX = -1;
             }
             if (Input::IsKeyDown(SDL_SCANCODE_D)) {
-                physics->velocityX += moveForce * deltaTime;
+                transform->x += moveForce * deltaTime;
                 controller->moveX = 1;
             }
         }
-    }
-}
-
-void WASDControllerSystem::ApplyUpgrade(UpgradeType type, float value) {
-    switch (type) {
-        case UPGRADE_SPEED:
-            printf("Applying speed upgrade: %.2fx\n", value);
-            speedMultiplier *= value;  // Increase movement speed
-            printf("New speed multiplier: %.2fx\n", speedMultiplier);
-            break;
     }
 }
 

@@ -1,9 +1,12 @@
-#pragma once
-#include "../systems.h"
+#include "../../core/ecs/systems.h"
 
-class PeanutSystem : public System {
-public:
+
+struct game_name_system : System {
     void Init() override;
     void Update(float deltaTime, EntityManager* entities, ComponentArrays* components) override;
     void Destroy() override;
+
+    bool is_visible = 1;
+    EntityID titleEntity = INVALID_ENTITY;
+
 }; 

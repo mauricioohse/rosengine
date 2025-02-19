@@ -48,32 +48,10 @@ enum ComponentTypes {
         } \
     } while(0)
 
-#define ADD_GRAVITY(entity, scale) \
-    do { \
-        g_Engine.entityManager.AddComponentToEntity(entity, COMPONENT_GRAVITY); \
-        GravityComponent* gravity = (GravityComponent*)g_Engine.componentArrays.GetComponentData(entity, COMPONENT_GRAVITY); \
-        if (gravity) { \
-            gravity->Init(scale); \
-        } \
-    } while(0)
-
-#define ADD_SQUIRREL(entity) \
-    do { \
-        g_Engine.entityManager.AddComponentToEntity(entity, COMPONENT_SQUIRREL); \
-        InitSquirrel(entity); \
-    } while(0)
-
 #define ADD_CAMERA(entity, viewportWidth, viewportHeight, targetEntity) \
     do { \
         g_Engine.entityManager.AddComponentToEntity(entity, COMPONENT_CAMERA); \
         InitCamera(entity, viewportWidth, viewportHeight, targetEntity); \
-    } while(0)
-
-
-#define ADD_CLOUD(entity, cloudType, size) \
-    do { \
-        g_Engine.entityManager.AddComponentToEntity(entity, COMPONENT_CLOUD); \
-        InitCloud(entity, cloudType, size); \
     } while(0)
 
 #define ADD_BACKGROUND(entity, parallax) \
@@ -84,13 +62,4 @@ enum ComponentTypes {
             background->Init(parallax); \
         } \
     } while(0)
-
-#define ADD_PEANUT(entity, peanutType) \
-    do { \
-        g_Engine.entityManager.AddComponentToEntity(entity, COMPONENT_PEANUT); \
-        InitPeanut(entity, peanutType); \
-    } while(0)
-
-
-
 

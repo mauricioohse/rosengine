@@ -9,7 +9,6 @@
 #include "ecs/systems.h"
 #include "ecs/components.h"
 #include "ecs/entity.h"
-#include "ecs/entity_test.h"
 #include "engine_constants.h"
 
 // #include "window.h"
