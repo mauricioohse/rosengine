@@ -4,12 +4,19 @@
 #include "../core/input.h"
 #include <math.h>
 #include <algorithm>
+#include "menu_scene.h"
 
 Game g_Game;
+MenuScene menu;
 
 bool Game::Init() {
     g_Engine.systemManager.RegisterSystem(new RenderSystem());
     g_Engine.systemManager.RegisterSystem(new WASDControllerSystem());
+
+    g_Engine.sceneManager.PushScene(&menu);
+    menu.systemManager.RegisterSystem(new RenderSystem());
+
+    menu.OnLoad();
 
     // Create background
     EntityID backgroundEntity = g_Engine.entityManager.CreateEntity();
@@ -40,12 +47,16 @@ void Game::HandleInput(){
 
 void Game::Update(float deltaTime) {
 
+
 }
 
 
 void Game::Render() {
     g_Engine.systemManager.UpdateSystems(g_Engine.deltaTime, &g_Engine.entityManager, &g_Engine.componentArrays);
-    
+
+
+    g_Engine.sceneManager.Update(.1);
+
 }
 
 void Game::Cleanup() {

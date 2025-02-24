@@ -1,0 +1,61 @@
+#pragma once
+#include "ecs/ecs_types.h"
+#include "core/ecs/entity.h"
+
+#define MAX_SCENE_STACK_SIZE 100
+
+enum struct SceneState {
+    INIT,      // call init once, then became active
+    ACTIVE,    // fully running, visible
+    PAUSED,    // visible but not updating (for UI overlays)
+    INACTIVE,  // not visible, not updating, but preserved
+    DESTROYED  // fully removed from stack
+};
+
+struct SceneBase {
+    // scene identification
+    const char* name;
+    SceneState state;
+    
+    // EntityID *sceneEntities; // IDs owned by scene
+    // uint32_t entityCount;
+
+    EntityID entities[MAX_ENTITIES]; 
+    uint32_t entityCount;
+
+    
+    EntityID RegisterEntity();
+    // virtual functions for scene lifecycle
+    virtual void OnLoad() = 0;    // called when scene is first loaded
+    // virtual void OnUnload() = 0;  // called when scene is being destroyed
+    virtual void OnUpdate(float deltaTime) = 0;  // called every frame when scene is active
+    // virtual void OnPause(float deltaTime) = 0;   // called when scene is being paused
+    // virtual void OnResume() = 0;  // called when scene is being resumed
+    
+};
+
+struct SceneManager {
+    SceneBase* sceneStack[MAX_SCENE_STACK_SIZE];
+    uint32_t stackSize;
+    
+    // core functions
+    void Init();
+    void Update(float deltaTime);
+    void Cleanup();
+    
+    // stack operations
+    void PushScene(SceneBase* scene);    // add scene to top of stack
+    void PopScene();                     // remove top scene
+    void ReplaceScene(SceneBase* scene); // pop current and push new
+    
+    // scene state management
+    void SetSceneState(SceneBase* scene, SceneState state);
+    SceneBase* GetActiveScene();
+    SceneBase* GetSceneByName(const char* name);
+    
+    // utility functions
+    bool IsSceneInStack(SceneBase* scene);
+    uint32_t GetSceneCount();
+};
+
+extern SceneManager g_SceneManager;  // global scene manager instance

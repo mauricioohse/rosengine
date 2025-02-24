@@ -18,18 +18,12 @@ enum GameState {
     GAME_STATE_PAUSED
 };
 
-struct PeanutTarget {
-    float x;
-    float y;
-    bool isCollected;
-};
 
 class Game {
 public:
     bool Init();
     void HandleInput();
     void Update(float deltaTime);
-    void RenderUpgradeUI();
     void Render();
     void Cleanup();
     void Reset();

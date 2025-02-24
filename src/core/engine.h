@@ -9,6 +9,7 @@
 #include "ecs/systems.h"
 #include "ecs/components.h"
 #include "ecs/entity.h"
+#include "scene_manager.h"
 #include "engine_constants.h"
 
 // #include "window.h"
@@ -22,6 +23,7 @@
 struct Window;
 struct Entity;
 struct ResourceManager;
+struct SceneManager;
 class Game;
 
 // Core engine systems
@@ -36,6 +38,7 @@ struct Engine {
     EntityManager entityManager;
     SystemManager systemManager;
     ComponentArrays componentArrays;
+    SceneManager sceneManager;
     
     // Initialize the engine
     static bool Init();
