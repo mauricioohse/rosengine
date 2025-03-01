@@ -7,11 +7,11 @@ void RenderSystem::Init() {
     cameraY = 0.0f;
 }
 
-void RenderSystem::Update(float deltaTime, EntityManager* entities, ComponentArrays* components) {
+void RenderSystem::Update(float deltaTime, std::vector<EntityID> entities, ComponentArrays* components) {
     // Find the active camera (assuming only one camera for now)
     CameraComponent* camera = nullptr;
-    for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
-        if (entities->HasComponent(entity, COMPONENT_CAMERA)) {
+    for ( EntityID entity : entities) {
+        if (g_Engine.entityManager.HasComponent(entity, COMPONENT_CAMERA)) {
             camera = &components->cameras[entity];
             // printf("Active camera found at entity %d\n", entity);
             break;
@@ -19,8 +19,9 @@ void RenderSystem::Update(float deltaTime, EntityManager* entities, ComponentArr
     }
 
     // Render all entities with transform and sprite components
-    for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
-        if (entities->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_SPRITE)) {
+    for (EntityID entity : entities)
+    {
+        if (g_Engine.entityManager.HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_SPRITE)) {
             TransformComponent* transform = 
                 (TransformComponent*)components->GetComponentData(entity, COMPONENT_TRANSFORM);
             SpriteComponent* sprite = 

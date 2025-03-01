@@ -41,7 +41,7 @@ void SystemManager::UnregisterSystem(System* system) {
     }
 }
 
-void SystemManager::UpdateSystems(float deltaTime, EntityManager* entities, ComponentArrays* components) {
+void SystemManager::UpdateSystems(float deltaTime, std::vector<EntityID> entities, ComponentArrays* components) {
 
     for (int i = 0; i < systemCount; i++) {
         if (systems[i]) {

@@ -1,6 +1,7 @@
 #pragma once
 #include "ecs/ecs_types.h"
 #include "core/ecs/entity.h"
+#include "vector"
 
 #define MAX_SCENE_STACK_SIZE 100
 
@@ -20,15 +21,18 @@ struct SceneBase {
     // EntityID *sceneEntities; // IDs owned by scene
     // uint32_t entityCount;
 
-    EntityID entities[MAX_ENTITIES]; 
-    uint32_t entityCount;
+    // TODO: use a better data structure than vector
+    // TODO: passing std::vector<EntityID> actually causes a copy of the whole entities array to the function. that should not be done.
+    std::vector<EntityID> entities;
 
     
     EntityID RegisterEntity();
+    void DeleteEntity(EntityID entity);
+    
     // virtual functions for scene lifecycle
     virtual void OnLoad() = 0;    // called when scene is first loaded
     // virtual void OnUnload() = 0;  // called when scene is being destroyed
-    virtual void OnUpdate(float deltaTime) = 0;  // called every frame when scene is active
+    void OnUpdate(float deltaTime);  // called every frame when scene is active
     // virtual void OnPause(float deltaTime) = 0;   // called when scene is being paused
     // virtual void OnResume() = 0;  // called when scene is being resumed
     

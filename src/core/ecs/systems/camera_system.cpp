@@ -2,14 +2,15 @@
 #include <stdio.h>
 #include <algorithm>
 #include <math.h>
+#include "../../engine.h"
 
 void CameraSystem::Init() {
     printf("CameraSystem initialized\n");
 }
 
-void CameraSystem::Update(float deltaTime, EntityManager* entities, ComponentArrays* components) {
-    for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
-        if (entities->HasComponent(entity, COMPONENT_CAMERA)) {
+void CameraSystem::Update(float deltaTime, std::vector<EntityID> entities, ComponentArrays* components) {
+    for ( EntityID entity : entities) {
+        if (g_Engine.entityManager.HasComponent(entity, COMPONENT_CAMERA)) {
             CameraComponent* camera = &components->cameras[entity];
             
             if (camera->targetEntity == 0) continue;

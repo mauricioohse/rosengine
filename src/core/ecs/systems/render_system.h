@@ -5,7 +5,7 @@
 
 struct RenderSystem : System {
     void Init() override;
-    void Update(float deltaTime, EntityManager* entities, ComponentArrays* components) override;
+    void Update(float deltaTime, std::vector<EntityID> entities, ComponentArrays* components) override;
     void Destroy() override;
     
     // Camera properties (we can expand this later)

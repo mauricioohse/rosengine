@@ -15,11 +15,12 @@ void BackgroundSystem::Init() {
     currentFrame = 0;
 }
 
-void BackgroundSystem::Update(float deltaTime, EntityManager* entities, ComponentArrays* components) {
+void BackgroundSystem::Update(float deltaTime, std::vector<EntityID> entities, ComponentArrays* components) {
     // Get camera position first
+    // TODO: get camera position directly on init, no sense to iterate here lol
     CameraComponent* camera = nullptr;
-    for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
-        if (entities->HasComponent(entity, COMPONENT_CAMERA)) {
+    for ( EntityID entity : entities) {
+        if (g_Engine.entityManager.HasComponent(entity, COMPONENT_CAMERA)) {
             camera = &components->cameras[entity];
             break;
         }
@@ -27,8 +28,8 @@ void BackgroundSystem::Update(float deltaTime, EntityManager* entities, Componen
     
     if (!camera) return;
 
-    for (EntityID entity = 1; entity < MAX_ENTITIES; entity++) {
-        if (entities->HasComponent(entity, COMPONENT_BACKGROUND | COMPONENT_TRANSFORM | COMPONENT_SPRITE)) {
+    for ( EntityID entity : entities) {
+        if (g_Engine.entityManager.HasComponent(entity, COMPONENT_BACKGROUND | COMPONENT_TRANSFORM | COMPONENT_SPRITE)) {
             TransformComponent* transform = &components->Transforms[entity];
             SpriteComponent* sprite = &components->Sprites[entity];
             

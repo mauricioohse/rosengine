@@ -4,13 +4,31 @@
 EntityID SceneBase::RegisterEntity(){
     EntityID newEntity = g_Engine.entityManager.CreateEntity();
 
-    entities[entityCount++] = newEntity;
+    entities.push_back(newEntity);
 
     return newEntity;
 }
 
+void SceneBase::DeleteEntity(EntityID entity){
+    // find the entity in our vector
+    for(int i = 0; i < entities.size(); i++){
+        if(entities[i] == entity){
+            // remove from our scene's entity list
+            entities[i] = entities[entities.size() - 1];
+            entities.pop_back();
+            
+            // destroy the entity in the entity manager
+            g_Engine.entityManager.DestroyEntity(entity);
+            return;
+        }
+    }
+    
+    // entity not found in this scene
+    printf("warning: attempted to delete entity %d not found in scene %s\n", entity, name);
+}
+
 void SceneBase::OnUpdate(float deltaTime) {
-    g_Engine.systemManager.UpdateSystems(deltaTime, &entities, &g_Engine.componentArrays);
+    g_Engine.systemManager.UpdateSystems(deltaTime, entities, &g_Engine.componentArrays);
 }
 
 void SceneManager::Init() {

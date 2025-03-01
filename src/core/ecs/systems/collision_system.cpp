@@ -2,6 +2,8 @@
 #include "../../utils.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "../../engine.h"
+#include <algorithm>
 
 void CollisionSystem::Init() {
     printf("CollisionSystem initialized\n");
@@ -64,12 +66,12 @@ void CollisionSystem::ResolveCollision(
     }
 }
 
-void CollisionSystem::Update(float deltaTime, EntityManager* entities, ComponentArrays* components) {
+void CollisionSystem::Update(float deltaTime, std::vector<EntityID> entities, ComponentArrays* components) {
     collisionCount = 0;
     
     // Check collisions between all entities with colliders
-    for (EntityID entityA = 1; entityA < MAX_ENTITIES; entityA++) {
-        if (!entities->HasComponent(entityA, COMPONENT_TRANSFORM | COMPONENT_COLLIDER)) {
+    for (EntityID entityA : entities) {
+        if (!g_Engine.entityManager.HasComponent(entityA, COMPONENT_TRANSFORM | COMPONENT_COLLIDER)) {
             continue;
         }
         
@@ -78,8 +80,10 @@ void CollisionSystem::Update(float deltaTime, EntityManager* entities, Component
         ColliderComponent* colliderA = 
             (ColliderComponent*)components->GetComponentData(entityA, COMPONENT_COLLIDER);
             
-        for (EntityID entityB = entityA + 1; entityB < MAX_ENTITIES; entityB++) {
-            if (!entities->HasComponent(entityB, COMPONENT_TRANSFORM | COMPONENT_COLLIDER)) {
+        auto it = std::find(entities.begin(), entities.end(), entityA);
+        for (auto it2 = std::next(it); it2 != entities.end(); ++it2) {
+            EntityID entityB = *it2;
+            if (!g_Engine.entityManager.HasComponent(entityB, COMPONENT_TRANSFORM | COMPONENT_COLLIDER)) {
                 continue;
             }
             

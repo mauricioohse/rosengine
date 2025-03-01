@@ -14,7 +14,7 @@ struct CollisionSystem : System {
     int collisionCount;
 
     void Init() override;
-    void Update(float deltaTime, EntityManager* entities, ComponentArrays* components) override;
+    void Update(float deltaTime, std::vector<EntityID> entities, ComponentArrays* components) override;
     void Destroy() override;
 
 private:
