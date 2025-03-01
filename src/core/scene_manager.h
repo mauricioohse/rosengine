@@ -33,9 +33,8 @@ struct SceneBase {
     virtual void OnLoad() = 0;    // called when scene is first loaded
     // virtual void OnUnload() = 0;  // called when scene is being destroyed
     void OnUpdate(float deltaTime);  // called every frame when scene is active
-    // virtual void OnPause(float deltaTime) = 0;   // called when scene is being paused
-    // virtual void OnResume() = 0;  // called when scene is being resumed
-    
+
+    void CleanDeletedEntities();
 };
 
 struct SceneManager {

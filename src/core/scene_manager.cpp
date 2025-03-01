@@ -14,6 +14,7 @@ void SceneBase::DeleteEntity(EntityID entity){
     for(int i = 0; i < entities.size(); i++){
         if(entities[i] == entity){
             // remove from our scene's entity list
+            // TODO: this changes the entity vector order... can cause issues!
             entities[i] = entities[entities.size() - 1];
             entities.pop_back();
             
@@ -27,8 +28,20 @@ void SceneBase::DeleteEntity(EntityID entity){
     printf("warning: attempted to delete entity %d not found in scene %s\n", entity, name);
 }
 
+void SceneBase::CleanDeletedEntities(){
+
+    for (EntityID e : entities){
+        if (!g_Engine.entityManager.IsEntityValid(e)){
+            DeleteEntity(e);
+        }
+    }
+
+}
+
 void SceneBase::OnUpdate(float deltaTime) {
     g_Engine.systemManager.UpdateSystems(deltaTime, entities, &g_Engine.componentArrays);
+
+    CleanDeletedEntities();
 }
 
 void SceneManager::Init() {
