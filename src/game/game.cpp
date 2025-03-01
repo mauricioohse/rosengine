@@ -14,9 +14,8 @@
 #include <math.h>
 #include <algorithm>
 #include "menu_scene.h"
-
+#include "main_game_scene.h"
 Game g_Game;
-MenuScene menu;
 
 bool Game::Init() {
     g_Engine.systemManager.RegisterSystem(new RenderSystem());
@@ -43,10 +42,13 @@ bool Game::Init() {
     // ADD_WASD_CONTROLLER(playerEntity, 600, 1);
     // ADD_COLLIDER(playerEntity, 32, 32, 0, 0);
 
-    g_Engine.sceneManager.PushScene(&menu);
+    g_Engine.sceneManager.PushScene(&g_menu);
+    g_Engine.sceneManager.PushScene(&g_mainGame);
 
-    menu.OnLoad();
-    
+    g_menu.OnLoad();
+    g_mainGame.OnLoad();
+    g_mainGame.state = SceneState::INACTIVE;
+
     return true;
 }
 

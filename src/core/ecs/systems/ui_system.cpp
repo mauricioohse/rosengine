@@ -12,7 +12,7 @@ void UISystem::Update(float deltaTime, std::vector<EntityID> entities, Component
     int mouseX, mouseY;
     Input::GetMousePosition(mouseX, mouseY);
 
-    // Update UI states only - no rendering here
+    // Update UI states
     for (EntityID entity : entities) {
         if (!g_Engine.entityManager.HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_UIBOX)) {
             continue;
@@ -32,8 +32,13 @@ void UISystem::Update(float deltaTime, std::vector<EntityID> entities, Component
 
         // Update pressed state based on mouse input
         if (box->isHovered) {
-            if (Input::IsMouseButtonPressed(SDL_BUTTON_LEFT)) {
+            if (Input::IsMouseButtonDown(SDL_BUTTON_LEFT)) {
                 box->isPressed = true;
+                printf("entity %d was clicked on\n", entity);
+                // Execute callback if it exists
+                if (box->onClick) {
+                    box->onClick();
+                }
             }
         }
 

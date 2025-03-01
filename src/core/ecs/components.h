@@ -276,10 +276,15 @@ struct UIBoxComponent : Component {
     bool isHovered;          // Is mouse currently over the box?
     bool isPressed;          // Is box currently being pressed?
     
+    // Function pointer for click callback
+    typedef void (*OnClickCallback)();
+    OnClickCallback onClick;
+    
     void Init(float w, float h, 
               SDL_Color bgColor = {50, 50, 50, 255},
               SDL_Color brdColor = {255, 255, 255, 255},
-              float brdWidth = 2.0f) {
+              float brdWidth = 2.0f,
+              OnClickCallback callback = nullptr) {
         width = w;
         height = h;
         backgroundColor = bgColor;
@@ -287,6 +292,7 @@ struct UIBoxComponent : Component {
         borderWidth = brdWidth;
         isHovered = false;
         isPressed = false;
+        onClick = callback;
     }
     
     void Destroy() override {
@@ -297,6 +303,7 @@ struct UIBoxComponent : Component {
         borderWidth = 0.0f;
         isHovered = false;
         isPressed = false;
+        onClick = nullptr;
     }
 };
 

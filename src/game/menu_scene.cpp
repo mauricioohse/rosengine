@@ -1,15 +1,20 @@
 #include "menu_scene.h"
 #include "../core/engine.h"
 #include "../core/window.h"
+#include "game.h"
+#include "main_game_scene.h"
+
+MenuScene g_menu;   
+
+// Callback function
+void StartGameButtonClicked() {
+    g_menu.state =  SceneState::DESTROYED;
+    g_mainGame.state = SceneState::ACTIVE;
+}
 
 void MenuScene::OnLoad()
 {
     EntityManager* EM = &g_Engine.entityManager;
-    EntityID box = RegisterEntity();
-    EM->AddComponentToEntity(box, COMPONENT_TRANSFORM | COMPONENT_SPRITE | COMPONENT_WASD_CONTROLLER);
-    g_Engine.componentArrays.Transforms[box].Init(300,300);
-    g_Engine.componentArrays.Sprites[box].Init(ResourceManager::GetTexture(TEXTURE_BOX));
-    g_Engine.componentArrays.wasdControllers[box].Init(600);
 
     // Create centered game title
     EntityID titleText = RegisterEntity();
@@ -29,13 +34,14 @@ void MenuScene::OnLoad()
     // Setup transform
     g_Engine.componentArrays.Transforms[startButton].Init(buttonX, buttonY);
     
-    // Setup UI box
+    // Setup UI box with callback
     g_Engine.componentArrays.UIBoxs[startButton].Init(
         buttonWidth, 
         buttonHeight,
-        SDL_Color{0, 50, 50, 255},      // Dark gray background
-        SDL_Color{0, 200, 200, 255},   // Light gray border
-        2.0f                             // Border width
+        SDL_Color{50, 50, 50, 255},      // Dark gray background
+        SDL_Color{200, 200, 200, 255},   // Light gray border
+        2.0f,                            // Border width
+        StartGameButtonClicked           // Click callback
     );
     
     // Setup text

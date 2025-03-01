@@ -88,13 +88,13 @@ void Engine::RunFrame() {
                 break;
                 
             case SDL_MOUSEBUTTONDOWN:
-                Input::mouseButtons[event.button.button - 1] = true;
-                Input::mouseButtonsPressed[event.button.button - 1] = true;
+                Input::mouseButtons[event.button.button] = true;
+                Input::mouseButtonsPressed[event.button.button] = true;
                 break;
                 
             case SDL_MOUSEBUTTONUP:
-                Input::mouseButtons[event.button.button - 1] = false;
-                Input::mouseButtonsReleased[event.button.button - 1] = true;
+                Input::mouseButtons[event.button.button] = false;
+                Input::mouseButtonsReleased[event.button.button] = true;
                 break;
         }
     }
