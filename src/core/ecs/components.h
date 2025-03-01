@@ -235,6 +235,38 @@ struct CameraComponent : Component {
     }
 };
 
+enum TextAlignment {
+    TEXT_CENTER,
+    TEXT_RIGHT
+};
+
+struct TextComponent : Component {
+    Font* font = nullptr;
+    char text[200];
+    SDL_Color color = {255, 255, 255, 255};
+    Texture* texture = nullptr;
+    bool isDirty = true;
+    TextAlignment alignment = TEXT_CENTER;
+
+    void Init(Font* _font, const char* _text, TextAlignment _alignment = TEXT_CENTER) {
+        font = _font;
+        strncpy(text, _text, sizeof(text) - 1);
+        text[sizeof(text) - 1] = '\0';  // Ensure null termination
+        alignment = _alignment;
+        isDirty = true;
+        texture = nullptr;
+    }
+
+    void Destroy() override {
+        font = nullptr;
+        text[0] = '\0';
+        color = {255, 255, 255, 255};
+        texture = nullptr;
+        isDirty = true;
+        alignment = TEXT_CENTER;
+    }
+};
+
 // Component initialization functions declarations only
 void InitTransform(EntityID entity, float x, float y, float rotation = 0.0f, float scale = 1.0f);
 void InitSprite(EntityID entity, Texture* texture);

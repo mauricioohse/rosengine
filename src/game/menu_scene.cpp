@@ -1,5 +1,6 @@
 #include "menu_scene.h"
 #include "../core/engine.h"
+#include "../core/window.h"
 
 void MenuScene::OnLoad()
 {
@@ -18,8 +19,26 @@ void MenuScene::OnLoad()
     wc->canMove = 1;
     wc->moveSpeed = 600;
 
-    state = SceneState::ACTIVE;
+    // Create centered game title
+    EntityID titleText = RegisterEntity();
+    EM->AddComponentToEntity(titleText, COMPONENT_TRANSFORM | COMPONENT_TEXT);
 
+    TransformComponent* titleTransform = &g_Engine.componentArrays.Transforms[titleText];
+    titleTransform->Init(
+        g_Engine.window->width / 2,  // Center X
+        g_Engine.window->height / 3,  // One-third from top
+        0,  // No rotation
+        1   // Normal scale
+    );
+
+    TextComponent* titleTextComp = &g_Engine.componentArrays.Texts[titleText];
+    titleTextComp->Init(
+        ResourceManager::GetFont(FONT_FPS),
+        "Game Name",
+        TEXT_CENTER
+    );
+
+    state = SceneState::ACTIVE;
 }
 
 

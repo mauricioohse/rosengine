@@ -1,12 +1,5 @@
 #pragma once
 #include "../core/window.h"
-#include "../core/resource_manager.h"
-#include "../core/ecs/systems/render_system.h"
-#include "../core/ecs/systems/wasd_controller_system.h"
-#include "../core/ecs/systems/collision_system.h"
-#include "../core/ecs/systems/camera_system.h"
-#include "../core/ecs/systems/background_system.h"
-#include "../core/ecs/systems/music_system.h"
 #include "../core/ecs/component_macros.h"
 #include "game_systems/game_name_system.h"
 

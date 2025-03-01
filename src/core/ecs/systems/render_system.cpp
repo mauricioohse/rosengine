@@ -55,6 +55,49 @@ void RenderSystem::Update(float deltaTime, std::vector<EntityID> entities, Compo
                 SDL_FLIP_NONE
             );
         }
+
+        // Handle text rendering
+        if (g_Engine.entityManager.HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_TEXT)) {
+            TransformComponent* transform = 
+                (TransformComponent*)components->GetComponentData(entity, COMPONENT_TRANSFORM);
+            TextComponent* text = 
+                (TextComponent*)components->GetComponentData(entity, COMPONENT_TEXT);
+
+            if (!transform || !text || !text->texture) continue;
+
+            float screenX = transform->x;
+            float screenY = transform->y;
+            
+            if (camera) {
+                screenX -= camera->x;
+                screenY -= camera->y;
+            }
+
+            // Adjust position based on alignment
+            switch (text->alignment) {
+                case TEXT_CENTER:
+                    screenX -= text->texture->width / 2;
+                    screenY -= text->texture->height / 2;
+                    break;
+                case TEXT_RIGHT:
+                    screenX -= text->texture->width;
+                    break;
+            }
+
+            SDL_Rect destRect = {
+                (int)screenX,
+                (int)screenY,
+                text->texture->width,
+                text->texture->height
+            };
+
+            SDL_RenderCopy(
+                g_Engine.window->renderer,
+                text->texture->sdlTexture,
+                NULL,
+                &destRect
+            );
+        }
     }
 }
 
