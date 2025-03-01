@@ -10,7 +10,7 @@
 #include "../core/ecs/systems/background_system.h"
 #include "../core/ecs/systems/music_system.h"
 #include "../core/ecs/systems/text_update_system.h"
-
+#include "../core/ecs/systems/ui_system.h"
 #include <math.h>
 #include <algorithm>
 #include "menu_scene.h"
@@ -22,7 +22,7 @@ bool Game::Init() {
     g_Engine.systemManager.RegisterSystem(new RenderSystem());
     g_Engine.systemManager.RegisterSystem(new WASDControllerSystem());
     g_Engine.systemManager.RegisterSystem(new TextUpdateSystem());
-
+    g_Engine.systemManager.RegisterSystem(new UISystem());
 
 
     // // Create background

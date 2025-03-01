@@ -1,7 +1,6 @@
 #pragma once
 #include "../systems.h"
 #include "../../window.h"
-#include "../../engine.h"
 
 struct RenderSystem : System {
     void Init() override;
@@ -15,4 +14,7 @@ struct RenderSystem : System {
 private:
     void RenderEntity(TransformComponent* transform, SpriteComponent* sprite);
     void RenderAnimatedEntity(TransformComponent *transform, AnimationComponent *anim);
+    static void RenderSpriteEntity(EntityID entity, ComponentArrays* components, CameraComponent* camera);
+    static void RenderTextEntity(EntityID entity, ComponentArrays* components, CameraComponent* camera);
+    static void RenderUIEntity(EntityID entity, ComponentArrays* components, CameraComponent* camera);
 };

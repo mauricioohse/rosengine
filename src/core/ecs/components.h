@@ -267,6 +267,39 @@ struct TextComponent : Component {
     }
 };
 
+struct UIBoxComponent : Component {
+    float width;              // Box width
+    float height;            // Box height
+    SDL_Color backgroundColor;// Background color of the box
+    SDL_Color borderColor;   // Border color
+    float borderWidth;       // Border thickness
+    bool isHovered;          // Is mouse currently over the box?
+    bool isPressed;          // Is box currently being pressed?
+    
+    void Init(float w, float h, 
+              SDL_Color bgColor = {50, 50, 50, 255},
+              SDL_Color brdColor = {255, 255, 255, 255},
+              float brdWidth = 2.0f) {
+        width = w;
+        height = h;
+        backgroundColor = bgColor;
+        borderColor = brdColor;
+        borderWidth = brdWidth;
+        isHovered = false;
+        isPressed = false;
+    }
+    
+    void Destroy() override {
+        width = 0.0f;
+        height = 0.0f;
+        backgroundColor = {0, 0, 0, 0};
+        borderColor = {0, 0, 0, 0};
+        borderWidth = 0.0f;
+        isHovered = false;
+        isPressed = false;
+    }
+};
+
 // Component initialization functions declarations only
 void InitTransform(EntityID entity, float x, float y, float rotation = 0.0f, float scale = 1.0f);
 void InitSprite(EntityID entity, Texture* texture);

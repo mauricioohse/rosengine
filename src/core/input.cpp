@@ -52,7 +52,7 @@ bool Input::IsKeyReleased(SDL_Scancode key) {
 }
 
 bool Input::IsMouseButtonDown(int button) {
-    printf("Mouse button %d is %s\n", button, mouseButtons[button] ? "down" : "up");
+    // printf("Mouse button %d is %s\n", button, mouseButtons[button] ? "down" : "up");
     return mouseButtons[button];
 }
 
