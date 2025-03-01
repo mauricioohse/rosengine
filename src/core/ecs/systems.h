@@ -1,10 +1,11 @@
 #pragma once
 #include "components.h"
 #include "entity.h"
+#include <vector>
 
 struct System {
     virtual void Init() = 0;
-    virtual void Update(float deltaTime, EntityManager* entities, ComponentArrays* components) = 0;
+    virtual void Update(float deltaTime, std::vector<EntityID> entities, ComponentArrays* components) = 0;
     virtual void Destroy() = 0;
 };
 
@@ -16,6 +17,6 @@ struct SystemManager {
     void Init();
     void RegisterSystem(System* system);
     void UnregisterSystem(System* system);
-    void UpdateSystems(float deltaTime, EntityManager* entities, ComponentArrays* components);
+    void UpdateSystems(float deltaTime, std::vector<EntityID> entities, ComponentArrays* components);
     void Destroy();
 }; 

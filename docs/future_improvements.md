@@ -1,5 +1,6 @@
 # RoseNgine future improvements
 
+- [ ] i just added a bunch of engine.h to all systems. I believe that should not be required =( that makes changes in engine.h to need to recompile all systems, which does not seem smart.
 - [ ] finish converting all components to xcomponent() format
 - [ ] create JSON/CSV-based object loading
     > there should be a way to easily load batches of entities from json or CSV files for creating levels/scenes
