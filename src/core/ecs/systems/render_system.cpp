@@ -21,12 +21,12 @@ void RenderSystem::Update(float deltaTime, std::vector<EntityID> entities, Compo
     // 1. First pass: Render all regular sprite entities
     for (EntityID entity : entities) {
         if (g_Engine.entityManager.HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_SPRITE) &&
-            !g_Engine.entityManager.HasComponent(entity, COMPONENT_UIBOX)) {  // Exclude UI elements
+            !g_Engine.entityManager.HasComponent(entity, COMPONENT_UIBOX)) {
             RenderSpriteEntity(entity, components, camera);
         }
     }
 
-    // 2. Second pass: Render standalone text (not part of UI)
+    // 2. Second pass: Render UI boxes WITHOUT transparency
     for (EntityID entity : entities) {
         if (g_Engine.entityManager.HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_TEXT) &&
             !g_Engine.entityManager.HasComponent(entity, COMPONENT_UIBOX)) {  // Exclude UI elements

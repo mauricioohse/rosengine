@@ -15,6 +15,7 @@
 #include <algorithm>
 #include "menu_scene.h"
 #include "main_game_scene.h"
+#include "pause_scene.h"
 Game g_Game;
 
 bool Game::Init() {
@@ -44,10 +45,12 @@ bool Game::Init() {
 
     g_Engine.sceneManager.PushScene(&g_menu);
     g_Engine.sceneManager.PushScene(&g_mainGame);
+    g_Engine.sceneManager.PushScene(&g_pauseScene);
 
     g_menu.OnLoad();
     g_mainGame.OnLoad();
-    g_mainGame.state = SceneState::INACTIVE;
+    g_pauseScene.OnLoad();
+    
 
     return true;
 }

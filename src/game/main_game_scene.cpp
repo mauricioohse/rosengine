@@ -2,6 +2,9 @@
 #include "../core/engine.h"
 #include "../core/window.h"
 #include "game.h"
+#include "pause_scene.h"
+#include "../core/input.h"
+
 
 MainGameScene g_mainGame;
 
@@ -16,5 +19,15 @@ void MainGameScene::OnLoad()
     g_Engine.componentArrays.Sprites[box].Init(ResourceManager::GetTexture(TEXTURE_BOX));
     g_Engine.componentArrays.wasdControllers[box].Init(600);
 
-    state = SceneState::ACTIVE;
+    state = SceneState::INACTIVE;
+}
+
+void MainGameScene::OptionalUpdate(float deltaTime)
+{
+    
+    if (Input::IsKeyDown(SDL_SCANCODE_ESCAPE)) {
+        g_pauseScene.state = SceneState::ACTIVE;
+        state = SceneState::INACTIVE;
+        // Don't set main game to DESTROYED, we want it to remain in the background
+    }
 }

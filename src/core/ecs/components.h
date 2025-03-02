@@ -255,6 +255,7 @@ struct TextComponent : Component {
         alignment = _alignment;
         isDirty = true;
         texture = nullptr;
+        printf("text component initialized: %s\n", text);
     }
 
     void Destroy() override {

@@ -31,7 +31,7 @@ struct SceneBase {
     
     // virtual functions for scene lifecycle
     virtual void OnLoad() = 0;    // called when scene is first loaded
-    // virtual void OnUnload() = 0;  // called when scene is being destroyed
+    virtual void OptionalUpdate(float deltaTime) {} // Optional update function for derived classes
     void OnUpdate(float deltaTime);  // called every frame when scene is active
 
     void CleanDeletedEntities();
