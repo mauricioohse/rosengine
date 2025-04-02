@@ -8,7 +8,7 @@ MenuScene g_menu;
 
 // Callback function
 void StartGameButtonClicked() {
-    g_menu.state =  SceneState::DESTROYED;
+    g_menu.state =  SceneState::INACTIVE;
     g_mainGame.state = SceneState::ACTIVE;
 }
 

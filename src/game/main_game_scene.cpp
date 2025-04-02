@@ -22,12 +22,24 @@ void MainGameScene::OnLoad()
     state = SceneState::INACTIVE;
 }
 
+void MainGameScene::handle_pause_input()
+{
+    static bool escapeReleased = false;
+    
+    if (!Input::IsKeyDown(SDL_SCANCODE_ESCAPE) && !escapeReleased) {
+        escapeReleased = true;
+    }
+
+    if (Input::IsKeyDown(SDL_SCANCODE_ESCAPE) && escapeReleased ) {
+        g_pauseScene.state = SceneState::ACTIVE;
+        g_mainGame.state = SceneState::INACTIVE;
+        printf("main game scene deactivated\n");
+        escapeReleased = false;
+    }
+}
+
 void MainGameScene::OptionalUpdate(float deltaTime)
 {
-    
-    if (Input::IsKeyDown(SDL_SCANCODE_ESCAPE)) {
-        g_pauseScene.state = SceneState::ACTIVE;
-        state = SceneState::INACTIVE;
-        // Don't set main game to DESTROYED, we want it to remain in the background
-    }
+    handle_pause_input();
+
 }

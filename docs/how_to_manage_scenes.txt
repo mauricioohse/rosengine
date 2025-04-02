@@ -1,0 +1,32 @@
+describing how to manage scenes
+
+Current requirements/functionalities:
+
+Scene definition:
+    a scene contains objects and group logic that will be displayed and updated in a given time
+    example of scenes: main menu, pause menu, the main game view, the in game UI, a submenu.
+    A specific level can also be a scene
+each scenes handle loading its own entities and objects
+each scene handles updating the systems related to the entities it owns
+each scene can create and delete entities
+a scene can have one of three states: update_and_render, render, inactive
+
+Scene manager:
+- Scene manager is singleton that manages all scenes
+- It has a scene stack that the game can insert and pop scenes into
+- the scene manager calls the update and render functions of all scenes of the stack, in order, taking account of the scene state (update_and_render, render, inactive)
+
+
+how to manage transitioning between scenes?
+
+Main issue:
+- I put optional functions in the scenes. there I read an input and change active/paused scene. but since they happen very fast, if I use the same button, and the button is kept pressing, it would transition many times
+
+Options:
+- (current) each scene implement the input logic on the optional update. need to deal with key release and such to not trigger many times when multiple scenes use the same key
+    - can be done with keypress transition states
+    - can be done with internal state machine
+    Pros:
+    - the transition logic keeps incapsulated in between scenes
+    Cons:
+    -
