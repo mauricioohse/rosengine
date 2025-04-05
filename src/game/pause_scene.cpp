@@ -9,24 +9,24 @@
 
 PauseScene g_pauseScene;
 
-void ResumeButtonClicked() {
+static void ResumeButtonClicked() {
     g_pauseScene.state = SceneState::INACTIVE;
     g_mainGame.state = SceneState::ACTIVE;
     g_pauseScene.escapeReleased = false;
 }
 
-void MainMenuButtonClicked() {
+static void MainMenuButtonClicked() {
     g_pauseScene.state = SceneState::INACTIVE;
     g_menu.state = SceneState::ACTIVE;
     g_pauseScene.escapeReleased = false;
 }
 
-void ToggleMusicButtonClicked() {
+static void ToggleMusicButtonClicked() {
     g_Game.musicSystem.ToggleMusic();
     printf("music toggled\n");
 }
 
-void ToggleSoundButtonClicked() {
+static void ToggleSoundButtonClicked() {
     PlaySound::ToggleSound();
 }
 
