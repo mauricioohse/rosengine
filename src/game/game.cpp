@@ -2,18 +2,28 @@
 #include "../core/resource_manager.h"
 #include "../core/window.h"
 #include "../core/input.h"
+#include "../core/resource_manager.h"
+#include "../core/ecs/systems/render_system.h"
+#include "../core/ecs/systems/wasd_controller_system.h"
+#include "../core/ecs/systems/collision_system.h"
+#include "../core/ecs/systems/camera_system.h"
+#include "../core/ecs/systems/background_system.h"
+#include "../core/ecs/systems/music_system.h"
+#include "../core/ecs/systems/text_update_system.h"
+#include "../core/ecs/systems/ui_system.h"
 #include <math.h>
 #include <algorithm>
 #include "menu_scene.h"
-
+#include "main_game_scene.h"
+#include "pause_scene.h"
 Game g_Game;
-MenuScene menu;
 
 bool Game::Init() {
     g_Engine.systemManager.RegisterSystem(new RenderSystem());
     g_Engine.systemManager.RegisterSystem(new WASDControllerSystem());
-
-
+    g_Engine.systemManager.RegisterSystem(new TextUpdateSystem());
+    g_Engine.systemManager.RegisterSystem(new UISystem());
+    g_Engine.systemManager.RegisterSystem(&musicSystem);
 
     // // Create background
     // EntityID backgroundEntity = g_Engine.entityManager.CreateEntity();
@@ -33,10 +43,16 @@ bool Game::Init() {
     // ADD_WASD_CONTROLLER(playerEntity, 600, 1);
     // ADD_COLLIDER(playerEntity, 32, 32, 0, 0);
 
-    g_Engine.sceneManager.PushScene(&menu);
 
-    menu.OnLoad();
+    g_Engine.sceneManager.PushScene(&g_menu);
+    g_Engine.sceneManager.PushScene(&g_mainGame);
+    g_Engine.sceneManager.PushScene(&g_pauseScene);
+
+    g_menu.OnLoad();
+    g_mainGame.OnLoad();
+    g_pauseScene.OnLoad();
     
+
     return true;
 }
 

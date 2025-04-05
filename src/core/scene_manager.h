@@ -6,11 +6,9 @@
 #define MAX_SCENE_STACK_SIZE 100
 
 enum struct SceneState {
-    INIT,      // call init once, then became active
     ACTIVE,    // fully running, visible
     PAUSED,    // visible but not updating (for UI overlays)
     INACTIVE,  // not visible, not updating, but preserved
-    DESTROYED  // fully removed from stack
 };
 
 struct SceneBase {
@@ -31,7 +29,7 @@ struct SceneBase {
     
     // virtual functions for scene lifecycle
     virtual void OnLoad() = 0;    // called when scene is first loaded
-    // virtual void OnUnload() = 0;  // called when scene is being destroyed
+    virtual void OptionalUpdate(float deltaTime) {} // Optional update function for derived classes
     void OnUpdate(float deltaTime);  // called every frame when scene is active
 
     void CleanDeletedEntities();

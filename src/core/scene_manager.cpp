@@ -39,6 +39,10 @@ void SceneBase::CleanDeletedEntities(){
 }
 
 void SceneBase::OnUpdate(float deltaTime) {
+    // Call the optional update first
+    OptionalUpdate(deltaTime);
+    
+    // Then do the standard system updates
     g_Engine.systemManager.UpdateSystems(deltaTime, entities, &g_Engine.componentArrays);
 
     CleanDeletedEntities();

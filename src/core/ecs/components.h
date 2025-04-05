@@ -235,6 +235,79 @@ struct CameraComponent : Component {
     }
 };
 
+enum TextAlignment {
+    TEXT_CENTER,
+    TEXT_RIGHT
+};
+
+struct TextComponent : Component {
+    Font* font = nullptr;
+    char text[200];
+    SDL_Color color = {255, 255, 255, 255};
+    Texture* texture = nullptr;
+    bool isDirty = true;
+    TextAlignment alignment = TEXT_CENTER;
+
+    void Init(Font* _font, const char* _text, TextAlignment _alignment = TEXT_CENTER) {
+        font = _font;
+        strncpy(text, _text, sizeof(text) - 1);
+        text[sizeof(text) - 1] = '\0';  // Ensure null termination
+        alignment = _alignment;
+        isDirty = true;
+        texture = nullptr;
+        printf("text component initialized: %s\n", text);
+    }
+
+    void Destroy() override {
+        font = nullptr;
+        text[0] = '\0';
+        color = {255, 255, 255, 255};
+        texture = nullptr;
+        isDirty = true;
+        alignment = TEXT_CENTER;
+    }
+};
+
+struct UIBoxComponent : Component {
+    float width;              // Box width
+    float height;            // Box height
+    SDL_Color backgroundColor;// Background color of the box
+    SDL_Color borderColor;   // Border color
+    float borderWidth;       // Border thickness
+    bool isHovered;          // Is mouse currently over the box?
+    bool isPressed;          // Is box currently being pressed?
+    
+    // Function pointer for click callback
+    typedef void (*OnClickCallback)();
+    OnClickCallback onClick;
+    
+    void Init(float w, float h, 
+              SDL_Color bgColor = {50, 50, 50, 255},
+              SDL_Color brdColor = {255, 255, 255, 255},
+              float brdWidth = 2.0f,
+              OnClickCallback callback = nullptr) {
+        width = w;
+        height = h;
+        backgroundColor = bgColor;
+        borderColor = brdColor;
+        borderWidth = brdWidth;
+        isHovered = false;
+        isPressed = false;
+        onClick = callback;
+    }
+    
+    void Destroy() override {
+        width = 0.0f;
+        height = 0.0f;
+        backgroundColor = {0, 0, 0, 0};
+        borderColor = {0, 0, 0, 0};
+        borderWidth = 0.0f;
+        isHovered = false;
+        isPressed = false;
+        onClick = nullptr;
+    }
+};
+
 // Component initialization functions declarations only
 void InitTransform(EntityID entity, float x, float y, float rotation = 0.0f, float scale = 1.0f);
 void InitSprite(EntityID entity, Texture* texture);

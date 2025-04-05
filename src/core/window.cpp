@@ -34,7 +34,7 @@ bool Window::Init(const char* title, int width, int height) {
 }
 
 void Window::Clear() {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 66, 66, 66, 255);
     SDL_RenderClear(renderer);
 }
 

@@ -204,6 +204,8 @@ struct ResourceManager {
     static void StopMusic();
     static void SetMusicVolume(int volume); // 0-128
 
+    static const int music_channel = -1;
+
 private:
     // Fixed-size arrays for resources
     static Texture* textures[TEXTURE_MAX];
