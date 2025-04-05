@@ -2,6 +2,7 @@
 #include "../core/window.h"
 #include "../core/ecs/component_macros.h"
 #include "game_systems/game_name_system.h"
+#include "../core/ecs/systems/music_system.h"
 
 // Add new game state
 enum GameState {
@@ -23,7 +24,7 @@ public:
 
     EntityID playerEntity;
     GameState gameState;
-
+    MusicSystem musicSystem;
 };
 
 extern Game g_Game;  // Global game instance 

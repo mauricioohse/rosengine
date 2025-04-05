@@ -5,6 +5,7 @@
 #include "main_game_scene.h"
 #include "menu_scene.h"
 #include "game.h"
+#include "../core/play_sound.h"
 
 PauseScene g_pauseScene;
 
@@ -18,6 +19,15 @@ void MainMenuButtonClicked() {
     g_pauseScene.state = SceneState::INACTIVE;
     g_menu.state = SceneState::ACTIVE;
     g_pauseScene.escapeReleased = false;
+}
+
+void ToggleMusicButtonClicked() {
+    g_Game.musicSystem.ToggleMusic();
+    printf("music toggled\n");
+}
+
+void ToggleSoundButtonClicked() {
+    PlaySound::ToggleSound();
 }
 
 void PauseScene::OnLoad()
@@ -65,6 +75,33 @@ void PauseScene::OnLoad()
         MainMenuButtonClicked
     );
 
+    // Create Toggle Music button
+    EntityID toggleMusicButton = RegisterEntity();
+    EM->AddComponentToEntity(toggleMusicButton, COMPONENT_UIBOX);
+    ADD_TRANSFORM(toggleMusicButton, buttonX, buttonY + 2*buttonHeight + 40, 0, 1.5f);
+    ADD_TEXT(toggleMusicButton, ResourceManager::GetFont(FONT_FPS), "Toggle Music");    
+    g_Engine.componentArrays.UIBoxs[toggleMusicButton].Init(
+        buttonWidth,
+        buttonHeight,
+        SDL_Color{50, 50, 50, 255},
+        SDL_Color{200, 200, 200, 255},
+        2.0f,
+        ToggleMusicButtonClicked
+    );
+
+    // Create Toggle Sound button
+    EntityID toggleSoundButton = RegisterEntity();
+    EM->AddComponentToEntity(toggleSoundButton, COMPONENT_UIBOX);
+    ADD_TRANSFORM(toggleSoundButton, buttonX, buttonY + 3*buttonHeight + 60, 0, 1.5f);
+    ADD_TEXT(toggleSoundButton, ResourceManager::GetFont(FONT_FPS), "Toggle SFX");
+    g_Engine.componentArrays.UIBoxs[toggleSoundButton].Init(
+        buttonWidth,
+        buttonHeight,
+        SDL_Color{50, 50, 50, 255},
+        SDL_Color{200, 200, 200, 255},
+        2.0f,
+        ToggleSoundButtonClicked
+    );
 
     state = SceneState::INACTIVE;
 } 

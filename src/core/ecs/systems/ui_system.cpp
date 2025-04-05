@@ -2,6 +2,7 @@
 #include "../../engine.h"
 #include "../../window.h"
 #include <stdio.h>
+#include "../../play_sound.h"
 
 void UISystem::Init() {
     printf("UISystem initialized\n");
@@ -35,15 +36,24 @@ void UISystem::Update(float deltaTime, std::vector<EntityID> entities, Component
             if (Input::IsMouseButtonDown(SDL_BUTTON_LEFT)) {
                 box->isPressed = true;
                 printf("entity %d was clicked on\n", entity);
-                // Execute callback if it exists
-                if (box->onClick) {
-                    box->onClick();
-                }
+                // // Execute callback if it exists
+                // if (box->onClick) {
+                //     box->onClick();
+                // }
+            }
+        }
+
+        if(box->isPressed && !Input::IsMouseButtonDown(SDL_BUTTON_LEFT) && box->isHovered) {
+            printf("entity %d is pressed\n", entity);
+            // Execute callback if it exists
+            if (box->onClick) {
+                PlaySound::PlaySound(SOUND_HIT);
+                box->onClick();
             }
         }
 
         // Reset pressed state when mouse button is released
-        if (!Input::IsMouseButtonDown(SDL_BUTTON_LEFT)) {
+        if (!Input::IsMouseButtonDown(SDL_BUTTON_LEFT) || !box->isHovered) {
             box->isPressed = false;
         }
     }

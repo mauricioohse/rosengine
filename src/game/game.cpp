@@ -23,7 +23,7 @@ bool Game::Init() {
     g_Engine.systemManager.RegisterSystem(new WASDControllerSystem());
     g_Engine.systemManager.RegisterSystem(new TextUpdateSystem());
     g_Engine.systemManager.RegisterSystem(new UISystem());
-
+    g_Engine.systemManager.RegisterSystem(&musicSystem);
 
     // // Create background
     // EntityID backgroundEntity = g_Engine.entityManager.CreateEntity();
@@ -42,6 +42,7 @@ bool Game::Init() {
     // ADD_SPRITE(playerEntity, playerTex);
     // ADD_WASD_CONTROLLER(playerEntity, 600, 1);
     // ADD_COLLIDER(playerEntity, 32, 32, 0, 0);
+
 
     g_Engine.sceneManager.PushScene(&g_menu);
     g_Engine.sceneManager.PushScene(&g_mainGame);
