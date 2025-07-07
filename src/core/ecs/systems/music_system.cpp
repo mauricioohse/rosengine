@@ -15,7 +15,7 @@ void MusicSystem::Init() {
     isHelicopterPlaying = false;
     isWindPlaying = false;
     
-    PlayMusic();
+    // PlayMusic();
     printf("MusicSystem initialized\n");
 }
 
