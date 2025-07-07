@@ -47,8 +47,8 @@ void UISystem::Update(float deltaTime, std::vector<EntityID> entities, Component
             printf("entity %d is pressed\n", entity);
             // Execute callback if it exists
             if (box->onClick) {
-                PlaySound::PlaySound(SOUND_HIT);
                 box->onClick();
+                PlaySound::PlaySound(SOUND_HIT);
             }
         }
 

@@ -1,0 +1,51 @@
+Building a sandfall simulator using rosengine
+
+it will be a small scale basic sand-pixel-material simulator
+
+general idea:
+    - physics simulation that acts on every pixel and certain things happen for each material in certain conditions
+    - user can input using mouse to place selected material
+    - selected material is selecter by choosing a box with the material in the top
+    - user can also save the current game into a file and load it later
+    - materials:
+
+    air:
+        - default material
+
+    sand:
+        - affected by gravity
+        - when too hot, turns into glass
+
+    fire:
+        - can only exist where air existed before
+        - generate smoke when cools off
+        - heats up adjacent tiles
+
+
+
+Sw changes:
+
+> create material component
+
+box_view:
+- main game
+- can decide how big each material block is
+
+Material data:
+- type
+- temperature
+- 
+
+Material system:
+- should I have a general system or one system per material?
+
+Material render:
+- definetly a separate render since it has no sprite
+
+
+todo list:
+- create viewport
+- create material component with sand
+- create mouse input handling
+- create sand logic
+
